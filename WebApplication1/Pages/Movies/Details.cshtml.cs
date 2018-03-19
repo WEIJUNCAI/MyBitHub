@@ -5,15 +5,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using WebApplication1.Models;
+using BitHub.Models;
 
-namespace WebApplication1.Pages.Movies
+namespace BitHub.Pages.Movies
 {
     public class DetailsModel : PageModel
     {
-        private readonly WebApplication1.Models.MovieContext _context;
+        private readonly BitHub.Models.MovieContext _context;
 
-        public DetailsModel(WebApplication1.Models.MovieContext context)
+        public DetailsModel(BitHub.Models.MovieContext context)
         {
             _context = context;
         }

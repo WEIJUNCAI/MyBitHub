@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
-using WebApplication1.Models;
-using WebApplication1.Utilities;
+using BitHub.Models;
+using BitHub.Utilities;
 
-namespace WebApplication1.Pages.Schedules
+namespace BitHub.Pages.Schedules
 {
     public class IndexModel : PageModel
     {

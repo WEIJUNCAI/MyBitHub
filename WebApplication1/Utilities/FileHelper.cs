@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using WebApplication1.Models;
+using BitHub.Models;
 
-namespace WebApplication1.Utilities
+namespace BitHub.Utilities
 {
     public class FileHelpers
     {

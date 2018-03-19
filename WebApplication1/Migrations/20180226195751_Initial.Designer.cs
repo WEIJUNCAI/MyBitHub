@@ -6,9 +6,9 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using System;
-using WebApplication1.Models;
+using BitHub.Models;
 
-namespace WebApplication1.Migrations
+namespace BitHub.Migrations
 {
     [DbContext(typeof(MovieContext))]
     [Migration("20180226195751_Initial")]
@@ -21,7 +21,7 @@ namespace WebApplication1.Migrations
                 .HasAnnotation("ProductVersion", "2.0.1-rtm-125")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("WebApplication1.Models.Movie", b =>
+            modelBuilder.Entity("BitHub.Models.Movie", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();

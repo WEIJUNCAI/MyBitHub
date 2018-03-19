@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace WebApplication1.Migrations
+namespace BitHub.Migrations
 {
     public partial class RatingMigration : Migration
     {
