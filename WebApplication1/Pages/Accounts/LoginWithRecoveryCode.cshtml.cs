@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using BitHub.Data;
 
-namespace BitHub.Pages.Account
+namespace BitHub.Pages.Accounts
 {
     public class LoginWithRecoveryCodeModel : PageModel
     {

@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using BitHub.Data;
 
-namespace BitHub.Pages.Account.Manage
+namespace BitHub.Pages.Accounts.Manage
 {
     public class EnableAuthenticatorModel : PageModel
     {

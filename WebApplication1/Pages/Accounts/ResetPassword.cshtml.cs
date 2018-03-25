@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using BitHub.Data;
 
-namespace BitHub.Pages.Account
+namespace BitHub.Pages.Accounts
 {
     public class ResetPasswordModel : PageModel
     {

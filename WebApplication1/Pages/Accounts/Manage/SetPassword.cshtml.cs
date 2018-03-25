@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using BitHub.Data;
 
-namespace BitHub.Pages.Account.Manage
+namespace BitHub.Pages.Accounts.Manage
 {
     public class SetPasswordModel : PageModel
     {

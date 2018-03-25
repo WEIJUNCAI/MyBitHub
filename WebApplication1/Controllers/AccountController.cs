@@ -30,5 +30,6 @@ namespace BitHub.Controllers
             _logger.LogInformation("User logged out.");
             return RedirectToPage("/Index");
         }
+
     }
 }

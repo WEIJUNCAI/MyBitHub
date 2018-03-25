@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -10,10 +11,12 @@ namespace BitHub.Models.Accounts
     {
         [Required]
         [StringLength(20, MinimumLength = 3)]
+        [Remote(action: "VerifyUsernameDuplicate", controller:"SignUpCheck", HttpMethod = "GET")]
         public string Username { get; set; }
 
         [Required]
         [EmailAddress]
+        [Remote(action: "VerifyEmailDuplicate", controller: "SignUpCheck", HttpMethod = "GET")]
         public string Email { get; set; }
 
         [Required]

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using BitHub.Data;
 using BitHub.Services;
 
-namespace BitHub.Pages.Account.Manage
+namespace BitHub.Pages.Accounts.Manage
 {
     public partial class IndexModel : PageModel
     {
