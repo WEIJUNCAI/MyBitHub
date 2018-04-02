@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace WebApplication1.Models
+namespace BitHub.Models
 {
     public class MovieContext : DbContext
     {

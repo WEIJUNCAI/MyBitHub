@@ -1,0 +1,64 @@
+﻿@page
+@model BitHub.Pages.Accounts.SignUpModel
+@{
+    ViewData["Title"] = "Sign Up";
+}
+
+
+<div class="container-fluid body-content py-4 bg-light">
+    <div class="row justify-content-md-center">
+        <div class="col-6">
+            <h1 class="display-4">Join BitHub</h1>
+            <p class="lead">Light-weight and powerful, just for you</p>
+            <form asp-route-returnUrl="@Model.ReturnUrl" class="mt-5 disable-btn-on-submit" method="post">
+                <h2 class="mb-3">
+                    Create your personal account
+                </h2>
+
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <div class="form-group">
+                    <label asp-for="Input.Username">Username</label>
+                    <input asp-for="Input.Username" class="form-control">
+                    <span asp-validation-for="Input.Username" class="text-danger"></span>
+                    <small class="form-text text-muted">This will be your username.</small>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Input.Email">Email Address</label>
+                    <input asp-for="Input.Email" class="form-control">
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    <small class="form-text text-muted">Use your e-mail to register.</small>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Input.Password">Password</label>
+                    <input asp-for="Input.Password" class="form-control">
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    <small class="form-text text-muted">Use at least one lowercase letter, one numeral, and seven characters.</small>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Input.ConfirmPassword">Confirm Password</label>
+                    <input asp-for="Input.ConfirmPassword" class="form-control">
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                    <small class="form-text text-muted">Make sure you entered your password correctly.</small>
+                </div>
+
+                <div class="my-4">
+                    <hr>
+                    <p>
+                        By clicking on "Create an account" below, you are agreeing to the
+                        <a>Terms of Serivce</a> and the <a>Privacy Policy</a>
+                    </p>
+                    <hr>
+                </div>
+                <button type="submit" class="btn btn-success" data-disable-with="Creating account…">Create an account</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

@@ -6,15 +6,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using WebApplication1.Models;
+using BitHub.Models;
 
-namespace WebApplication1.Pages.Movies
+namespace BitHub.Pages.Movies
 {
     public class IndexModel : PageModel
     {
-        private readonly WebApplication1.Models.MovieContext _context;
+        private readonly BitHub.Models.MovieContext _context;
 
-        public IndexModel(WebApplication1.Models.MovieContext context)
+        public IndexModel(BitHub.Models.MovieContext context)
         {
             _context = context;
         }

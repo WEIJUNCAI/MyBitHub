@@ -1,0 +1,95 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using BitHub.Data
+
+@inject SignInManager<ApplicationUser> signInManager
+@inject UserManager<ApplicationUser> userManager
+
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-fixed-top py-1" style="background-color: #e3f2fd;">
+    <div class="container my-0">
+
+        <div class="navbar-header">
+            <a asp-page="/Index" class="navbar-brand text-white">
+                BitHub
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarItems">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+
+        @if (!signInManager.IsSignedIn(User))
+        {
+            <div class="navbar-collapse collapse" id="navbarItems">
+                <ul class="nav navbar-nav mr-auto">
+                    <li class="nav-item active"><a class="nav-link" asp-page="/Index">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-page="/About">About</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-page="/Contact">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-page="/Schedules/Index">Schedules</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-page="/Repositories/Index" asp-route-Owner="libgit2" asp-route-Reponame="libgit2sharp">Test Repo Home</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-page="/Repositories/Directory" asp-route-Owner="libgit2" asp-route-Reponame="libgit2sharp" asp-route-Branch="master" asp-route-RequestDir="LibGit2Sharp">Test Repo Dir</a></li>
+
+                </ul>
+
+                <form class="form-inline my-2 my-md-0">
+                    <input class="form-control form-control-sm" type="text" placeholder="Search BitHub">
+                </form>
+                <div class="d-inline-block px-0 py-2 mx-4">
+                    <a class="text-white" asp-page="/Accounts/SignIn">Sign in</a>
+                    <span class="navbar-text">or</span>
+                    <a class="text-white" asp-page="/Accounts/SignUp">Sign up</a>
+                </div>
+            </div>
+        }
+        else
+        {
+
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <form class="form-inline my-2">
+                        <input class="form-control form-control-sm" type="text" placeholder="Search BitHub" />
+                    </form>
+                </li>
+                <li class="nav-item"><a class="nav-link" asp-page="About"></a></li>
+                <li class="nav-item"><a class="nav-link" asp-page="Contact"></a></li>
+            </ul>
+
+            <a class="mx-3" asp-page="/Accounts/Notifications">
+                <img src="~/images/octicons/bell.svg" />
+            </a>
+
+            <ul class="navbar-nav pr-5">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
+                        <img src="~/images/octicons/plus.svg" />
+                    </a>
+                    <div class="dropdown-menu">
+                        <a asp-page="/Repositories/New" class="dropdown-item">New repository</a>
+                        <a asp-page="/Repositories/Import" class="dropdown-item">Import repository</a>
+                    </div>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
+                        <img src="~/images/octicons/person.svg" />
+                    </a>
+                    <div class="dropdown-menu">
+                        <h4 class="dropdown-header">
+                            Signed in as
+                            <br />
+                            <strong>@userManager.GetUserName(User)</strong>
+                        </h4>
+                        <div class="dropdown-divider"></div>
+                        <a asp-page="/Accounts/Manage/Index" class="dropdown-item">Your profile</a>
+                        <form asp-controller="Account" asp-action="SignOut" method="post">
+                            <button type="submit" class="dropdown-item btn btn-link">Sign Out</button>
+                        </form>
+                    </div>
+                </li>
+            </ul>
+        }
+
+
+    </div>
+</nav>
+
+

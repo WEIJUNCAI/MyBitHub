@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
-using WebApplication1.Models;
+using BitHub.Models;
 
-namespace WebApplication1.Pages.Schedules
+namespace BitHub.Pages.Schedules
 {
     public class DeleteModel : PageModel
     {

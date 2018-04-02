@@ -1,0 +1,59 @@
+﻿@page
+@model BitHub.Pages.Repositories.NewModel
+
+@using Microsoft.AspNetCore.Identity
+@using BitHub.Data
+
+@inject UserManager<ApplicationUser> userManager
+
+
+@{
+    ViewData["Title"] = "Create a New Repository";
+}
+
+
+
+<div class="row justify-content-md-center">
+    <div class="col-md-6 mt-5">
+        <form method="POST" class="disable-btn-on-submit">
+            <div class="form-group">
+                <h2>Create a new repository</h2>
+                <p class="Subhead-description">
+                    A repository contains all the files for your project, including the revision history.
+                </p>
+                <hr>
+            </div>
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <div class="form-row mt-4">
+                <div class="form-group col-md-4">
+                    <label class="font-weight-bold">Owner</label>
+                    <p>@userManager.GetUserName(User)</p>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="Input.RepoName" class="font-weight-bold">Repository name</label>
+                    <input asp-for="Input.RepoName" class="form-control">
+                    <span asp-validation-for="Input.RepoName" class="text-danger"></span>
+                </div>
+            </div>
+            <p class="mb-4">Great repository names are short and memorable.</p>
+
+            <div class="form-group">
+                <label asp-for="Input.Description">Description <small class="text-muted">(optional)</small></label>
+                <input asp-for="Input.Description" class="form-control">
+                <span asp-validation-for="Input.Description" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <div class="custom-control custom-checkbox">
+                    <input asp-for="IfGenerateReadme" type="checkbox" class="custom-control-input" id="customCheck1">
+                    <label asp-for="IfGenerateReadme" class="custom-control-label" for="customCheck1">Initialize this repository with a README</label>
+                </div>
+                <small class="text-muted">This will let you immediately clone the repository to your computer. Skip this step if you are importing an existing repository.</small>
+            </div>
+            <hr>
+
+            <button class="btn btn-success" type="submit" data-disable-with="Creating repository...">Create repository</button>
+        </form>
+    </div>
+</div>
