@@ -1,0 +1,259 @@
+﻿@page "{Owner}/{Reponame}/{Branch}/{RequestDir}"
+@model BitHub.Pages.Repositories.DirectoryModel
+@{
+    ViewData["Title"] = "Directory";
+}
+
+<div class="container-fluid body-content">
+    <div class="row px-5 bg-light">
+
+
+        <div class="col-md-6 mt-3">
+            <ul class="list-inline mb-0">
+                <li class="list-inline-item mx-1">
+                    <img src="~/images/octicons/repo.svg">
+                </li>
+                <li class="list-inline-item">
+                    <ol class="breadcrumb my-0 bg-light">
+                        <li class="breadcrumb-item">
+                            <a href="#">@Model.RepoInfo.Owner</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <strong><a asp-page="./Index" asp-route-Owner="@Model.RepoInfo.Owner" asp-route-Reponame="@Model.RepoInfo.RepoName" class="active">@Model.RepoInfo.RepoName</a></strong>
+                        </li>
+                    </ol>
+                </li>
+            </ul>
+        </div>
+
+        <div class="col-md-6 mt-4">
+            <div class="row justify-content-center">
+                <div class="col-md-4 px-0">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend">
+                            <button type="button" class="btn btn-outline-dark">
+                                <img src="~/images/octicons/eye.svg"> Watch
+                            </button>
+                            <div class="input-group-text bg-white rounded-right" id="btnGroupAddon">@Model.RepoInfo.WatchCount</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 px-0">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend">
+                            <button type="button" class="btn btn-outline-dark">
+                                <img src="~/images/octicons/star.svg"> Star
+                            </button>
+                            <div class="input-group-text bg-white rounded-right" id="btnGroupAddon">@Model.RepoInfo.StarCount</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 px-0">
+                    <div class="input-group input-group-sm">
+
+                        <div class="input-group-prepend">
+                            <button type="button" class="btn btn-outline-dark">
+                                <img src="~/images/octicons/repo-forked.svg"> Fork
+                            </button>
+                            <div class="input-group-text bg-white rounded-right" id="btnGroupAddon">@Model.RepoInfo.ForkCount</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row px-0 pt-2 bg-light">
+        <div class="col-md-12 mx-0">
+            <nav>
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-item nav-link ml-5 text-dark active" id="nav-code-tab" data-toggle="tab" href="#nav-code">
+                            <img src="~/images/octicons/code.svg"> Code
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-item nav-link text-dark" id="nav-issue-tab" data-toggle="tab" href="#nav-issues">
+                            <img src="~/images/octicons/issue-opened.svg"> Issues
+                            <span class="badge badge-light">153</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-item nav-link text-dark" id="nav-pr-tab" data-toggle="tab" href="#nav-pr">
+                            <img src="~/images/octicons/git-pull-request.svg"> Pull requests
+                            <span class="badge badge-light">35</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-item nav-link text-dark" id="nav-projects-tab" data-toggle="tab" href="#nav-projects">
+                            <img src="~/images/octicons/project.svg"> Projects
+                            <span class="badge badge-light">35</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-item nav-link text-dark" id="nav-wiki-tab" data-toggle="tab" href="#nav-wiki">
+                            <img src="~/images/octicons/book.svg"> Wiki
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-item nav-link text-dark" id="nav-contact-tab" data-toggle="tab" href="#nav-insights">
+                            <img src="~/images/octicons/graph.svg"> Insights
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+    </div>
+
+    <div class="tab-content mt-4 " id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-code">
+            <div class="container">
+
+                <div class="row my-1">
+                    <div class="col">
+                        <ul class="list-inline mb-0">
+
+                            <li class="list-inline-item">
+                                <div class="dropdown">
+                                    <button class="btn dropdown-toggle btn-sm btn-outline-dark" type="button" id="dropdownMenuButton" data-toggle="dropdown">
+                                        Branch:
+                                        <span class="font-weight-bold align-bottom branch-name-span">@Model.RepoInfo_Additional.CurrentBranch.FriendlyName</span>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-branch-list">
+                                        @foreach (var branch in Model.RepoInfo_Additional.Branches)
+                                        {
+                                            <a class="dropdown-item" href="#">@branch</a>
+                                            <div class="dropdown-divider"></div>
+                                        }
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col text-right">
+                        <div class="btn-group btn-group-sm">
+                            <button type="button" class="btn btn-outline-dark">Create new file</button>
+                            <button type="button" class="btn btn-outline-dark">Upload files</button>
+                            <button type="button" class="btn btn-outline-dark">Find file</button>
+                            <button type="button" class="btn btn-outline-dark">History</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <ol class="breadcrumb my-2 px-1 py-1 bg-white">
+
+                            <li class="breadcrumb-item">
+                                <strong><a asp-page="./Index" asp-route-Owner="@Model.RepoInfo.Owner" asp-route-Reponame="@Model.RepoInfo.RepoName" class="active">@Model.RepoInfo.RepoName</a></strong>
+                            </li>
+                            @foreach (var parentDir in Model.RepoInfo_Additional.ParentDirectories)
+                            {
+                                <li>
+                                    <a asp-page="./Directory"
+                                       asp-route-Owner="@Model.RepoInfo.Owner"
+                                       asp-route-Reponame="@Model.RepoInfo.RepoName"
+                                       asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
+                                       asp-route-RequestDir="@Model.ReconstructPath(parentDir)">@parentDir</a>
+                                </li>
+                            }
+                            <li class="breadcrumb-item active">
+                                @Model.RepoInfo_Additional.CurrentPath
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="card">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item card-repo-header text-muted py-2">
+                                    <div class="row">
+                                        <div class="col">
+
+                                        </div>
+                                        <div class="col text-right">
+                                            Latest commit
+                                            <a href="#" class="text-dark">
+                                                <code>@Model.RepoInfo_Additional.CurrentBranch.Tip.Sha.Substring(0, 7)</code>
+                                            </a>
+                                            <span> @Model.GetTimeDifference(Model.RepoInfo_Additional.CurrentBranch.Tip.Committer.When)</span>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li class="list-group-item py-1 repo-file-dir-entry">
+                                    <div class="row">
+                                        <div class="col">
+                                            <a href="#">
+                                                <strong> .. </strong>
+                                            </a>
+                                        </div>
+
+                                    </div>
+                                </li>
+
+                                @foreach (var entry in Model.RepoInfo_Additional.TableEntries)
+                                {
+                                    <li class="list-group-item py-2 repo-file-dir-entry">
+                                        <div class="row">
+                                            <div class="col-4">
+                                                @if (entry.EntryType == Models.Repository.EntryType.Directory)
+                                                {
+                                                    <a asp-page="Directory"
+                                                       asp-route-Owner="@Model.RepoInfo.Owner"
+                                                       asp-route-Reponame="@Model.RepoInfo.RepoName"
+                                                       asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
+                                                       asp-route-RequestDir="@entry.FriendlyPath">
+                                                        <img class="mr-1" src="~/images/octicons/file-directory.svg">
+                                                        @entry.FriendlyPath
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <a href="#">
+                                                        <img class="mr-1" src="~/images/octicons/file.svg" />
+                                                        @entry.FriendlyPath
+                                                    </a>
+                                                }
+                                            </div>
+                                            <div class="col-6">
+                                                @if (entry.LatestCommit == null)
+                                                {
+                                                    <em class="text-muted">No commit info available.</em>
+                                                }
+                                                else
+                                                {
+                                                    <a href="#" class="text-muted">
+                                                        @entry.LatestCommit.MessageShort
+                                                    </a>
+                                                }
+                                            </div>
+                                            <div class="col-2 text-muted text-right">
+                                                @(entry.LatestCommit == null ? string.Empty : Model.GetTimeDifference(entry.LatestCommit.Committer.When))
+                                            </div>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="tab-pane fade" id="nav-issues">
+            aliqua ullamco irure incididunt irure non esse consectetur nostrud minim non minim occaecat. Amet duis do nisi
+            duis veniam non est eiusmod tempor incididunt tempor dolor ipsum in qui sit. Exercitation mollit sit culpa
+        </div>
+        <div class="tab-pane fade" id="nav-pr">
+            aliqua ullamco irure incididunt irure non esse consectetur nostrud minim non minim occaecat. Amet duis do nisi
+            duis veniam non est eiusmod tempor incididunt tempor dolor ipsum in qui sit. Exercitation mollit sit culpa
+        </div>
+    </div>
+</div>

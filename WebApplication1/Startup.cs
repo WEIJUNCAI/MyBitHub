@@ -12,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 using BitHub.Data;
 using BitHub.Services;
+using BitHub.Options;
+using LibGit2Sharp;
 
 namespace BitHub
 {
@@ -83,8 +85,17 @@ namespace BitHub
             // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=532713
             services.AddSingleton<IEmailSender, EmailSender>();
 
+            services.AddSingleton<IDirectoryManager, LocalDirectoryManager>();
+
+            services.AddSingleton<IFileManager, LocalFileManager>();
+
+            // container will call Dispose for IDisposable types it creates
+            //services.AddScoped<Repository>();
+
             services.AddDbContext<Models.MovieContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("MovieContext")));
+
+            services.Configure<FileDirectoryOptions>(Configuration);
 
         }
 

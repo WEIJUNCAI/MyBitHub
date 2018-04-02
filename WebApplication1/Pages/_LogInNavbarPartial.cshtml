@@ -5,12 +5,12 @@
 @inject UserManager<ApplicationUser> userManager
 
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top" style="background-color: #e3f2fd;">
-    <div class="container">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-fixed-top py-1" style="background-color: #e3f2fd;">
+    <div class="container my-0">
 
         <div class="navbar-header">
-            <a asp-page="/Index" class="navbar-brand">
-                <img width="50" height="50" src="~/images/octicons/logo-github.svg" />
+            <a asp-page="/Index" class="navbar-brand text-white">
+                BitHub
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarItems">
                 <span class="navbar-toggler-icon"></span>
@@ -25,10 +25,13 @@
                     <li class="nav-item"><a class="nav-link" asp-page="/About">About</a></li>
                     <li class="nav-item"><a class="nav-link" asp-page="/Contact">Contact</a></li>
                     <li class="nav-item"><a class="nav-link" asp-page="/Schedules/Index">Schedules</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-page="/Repositories/Index" asp-route-Owner="libgit2" asp-route-Reponame="libgit2sharp">Test Repo Home</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-page="/Repositories/Directory" asp-route-Owner="libgit2" asp-route-Reponame="libgit2sharp" asp-route-Branch="master" asp-route-RequestDir="LibGit2Sharp">Test Repo Dir</a></li>
+
                 </ul>
 
                 <form class="form-inline my-2 my-md-0">
-                    <input class="form-control" type="text" placeholder="Search BitHub">
+                    <input class="form-control form-control-sm" type="text" placeholder="Search BitHub">
                 </form>
                 <div class="d-inline-block px-0 py-2 mx-4">
                     <a class="text-white" asp-page="/Accounts/SignIn">Sign in</a>
@@ -43,7 +46,7 @@
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
                     <form class="form-inline my-2">
-                        <input class="form-control" type="text" placeholder="Search BitHub" />
+                        <input class="form-control form-control-sm" type="text" placeholder="Search BitHub" />
                     </form>
                 </li>
                 <li class="nav-item"><a class="nav-link" asp-page="About"></a></li>
@@ -60,8 +63,8 @@
                         <img src="~/images/octicons/plus.svg" />
                     </a>
                     <div class="dropdown-menu">
-                        <a asp-page="/Repository/New" class="dropdown-item">New repository</a>
-                        <a asp-page="/Repository/Import" class="dropdown-item">Import repository</a>
+                        <a asp-page="/Repositories/New" class="dropdown-item">New repository</a>
+                        <a asp-page="/Repositories/Import" class="dropdown-item">Import repository</a>
                     </div>
                 </li>
 

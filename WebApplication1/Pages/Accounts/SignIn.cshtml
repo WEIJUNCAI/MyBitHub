@@ -1,77 +1,78 @@
 ﻿@page
 @model BitHub.Pages.Accounts.SignInModel
 @{
-    ViewData["Title"] = "SignIn";
+    ViewData["Title"] = "Sign In";
 }
 
 
-<div class="position-relative">
-    <div class="header width-full pt-5 pb-4">
-        <div class="container clearfix width-full text-center">
-            <a class="header-logo" asp-page="../Index">
-                <img height="60" width="60" src="~/images/octicons/mark-github.svg" />
-            </a>
+<div class="container-fluid body-content bg-light">
+    <div class="position-relative">
+        <div class="header width-full pt-5 pb-4">
+            <div class="container clearfix width-full text-center">
+                <a class="header-logo" asp-page="../Index">
+                    <img height="60" width="60" src="~/images/octicons/mark-github.svg" />
+                </a>
+            </div>
         </div>
     </div>
-</div>
 
 
-<div class="text-center">
-    <div class="row justify-content-md-center">
-        <div class="col-sm-4">
-            <form class="form-signin" method="post">
+    <div class="text-center">
+        <div class="row justify-content-md-center">
+            <div class="col-sm-4">
+                <form class="form-signin disable-btn-on-submit" method="post">
 
-                <div class="auth-form-header p-0">
-                    <h2>Sign in to BitHub</h2>
-                </div>
+                    <div class="auth-form-header p-0">
+                        <h2>Sign in to BitHub</h2>
+                    </div>
 
-                <div asp-validation-summary="All" class="text-danger"></div>
+                    <div asp-validation-summary="All" class="text-danger"></div>
 
-                <div class="text-left mt-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label asp-for="Input.Email"> Email address </label>
-                                <input asp-for="Input.Email" class="form-control">
-                                <span asp-validation-for="Input.Email" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <div class="row justify-content-between mx-0">
-                                    <label asp-for="Input.Password"> Password </label>
-                                    <a asp-page="./ResetPassword">Forgot password?</a>
+                    <div class="text-left mt-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label asp-for="Input.Email"> Email address </label>
+                                    <input asp-for="Input.Email" class="form-control">
+                                    <span asp-validation-for="Input.Email" class="text-danger"></span>
                                 </div>
-                                <input asp-for="Input.Password" class="form-control input-block" tabindex="2">
-                                <span asp-validation-for="Input.Password" class="text-danger"></span>
-                            </div>
+                                <div class="form-group">
+                                    <div class="row justify-content-between mx-0">
+                                        <label asp-for="Input.Password"> Password </label>
+                                        <a asp-page="./ResetPassword">Forgot password?</a>
+                                    </div>
+                                    <input asp-for="Input.Password" class="form-control input-block" tabindex="2">
+                                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                                </div>
 
-                            <div class="custom-control custom-checkbox">
-                                <input asp-for="Input.RememberMe" type="checkbox" class="custom-control-input">
-                                <label asp-for="Input.RememberMe" class="custom-control-label">Remember me</label>
-                            </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input asp-for="Input.RememberMe" type="checkbox" class="custom-control-input">
+                                    <label asp-for="Input.RememberMe" class="custom-control-label">Remember me</label>
+                                </div>
 
-                            <div class="form-group">
-                                <input type="submit" value="Sign in" class="btn btn-success btn-block mt-3" data-disable-with="Signing in…">
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-success btn-block mt-3" data-disable-with="Signing in...">Sign in</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
-    </div>
-    <div class="row justify-content-md-center mt-4">
-        <div class="col-sm-4">
-            <div class="card">
-                <div class="card-body">
-                    <p class="mb-0">
-                        New to BitHub?
-                        <a asp-page="./SignUp">Create an account</a>
-                    </p>
+        <div class="row justify-content-md-center mt-4">
+            <div class="col-sm-4">
+                <div class="card">
+                    <div class="card-body">
+                        <p class="mb-0">
+                            New to BitHub?
+                            <a asp-page="./SignUp">Create an account</a>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")

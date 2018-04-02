@@ -11,9 +11,10 @@ using System;
 namespace BitHub.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180325212541_AddRootDirAndRepo")]
+    partial class AddRootDirAndRepo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,11 +84,10 @@ namespace BitHub.Data.Migrations
                     b.Property<string>("Description")
                         .HasMaxLength(200);
 
-                    b.Property<int>("ForkCount");
-
                     b.Property<string>("LicenseFilePath");
 
-                    b.Property<string>("Owner");
+                    b.Property<string>("Owner")
+                        .IsRequired();
 
                     b.Property<string>("ReadMeFilePath");
 
@@ -95,48 +95,14 @@ namespace BitHub.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(100);
 
-                    b.Property<string>("RootPath");
-
-                    b.Property<int>("StarCount");
-
-                    b.Property<int>("WatchCount");
+                    b.Property<string>("RootPath")
+                        .IsRequired();
 
                     b.HasKey("ID");
 
                     b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Repositories");
-                });
-
-            modelBuilder.Entity("BitHub.Models.Repository.RepoTagmentModel", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("RepoID");
-
-                    b.Property<int>("TagID");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("RepoID");
-
-                    b.HasIndex("TagID");
-
-                    b.ToTable("Tagments");
-                });
-
-            modelBuilder.Entity("BitHub.Models.Repository.RepoTagModel", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("TagName")
-                        .IsRequired();
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -252,19 +218,6 @@ namespace BitHub.Data.Migrations
                     b.HasOne("BitHub.Data.ApplicationUser")
                         .WithMany("Repositories")
                         .HasForeignKey("ApplicationUserId");
-                });
-
-            modelBuilder.Entity("BitHub.Models.Repository.RepoTagmentModel", b =>
-                {
-                    b.HasOne("BitHub.Models.Repository.RepositoryInfoModel", "Repo")
-                        .WithMany("Tags")
-                        .HasForeignKey("RepoID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("BitHub.Models.Repository.RepoTagModel", "Tag")
-                        .WithMany("Tagments")
-                        .HasForeignKey("TagID")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

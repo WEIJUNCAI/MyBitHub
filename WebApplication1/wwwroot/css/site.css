@@ -1,5 +1,4 @@
 body {
-    padding-top: 50px;
     padding-bottom: 20px;
 }
 
@@ -33,3 +32,64 @@ body {
         display: none;
     }
 }
+
+
+/* CSS used here will be applied after bootstrap.css */
+
+a {
+    color: #0366d6;
+}
+
+
+.nav-tabs {
+    margin: 0;
+}
+
+
+.nav-tabs > .nav-item > .active, .nav-tabs > .nav-item > .active:hover, .nav-tabs > .nav-item > .active:focus {
+    border-top-width: 3px;
+    border-top-color: #d45500;
+}
+
+.input-group-text {
+    border-color: black;
+}
+
+.nav-item > .nav-link > .badge {
+    background-color: rgb(228, 225, 225);
+}
+
+.card-repo-header {
+    background-color: #f2f7ff;
+    font-size: small;
+}
+
+.card-readme-header {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.dropdown-branch-list {
+    overflow: auto;
+    width: 300px;
+    max-height: 350px;
+    font-size: 12px;
+}
+
+.branch-name-span {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.repo-file-dir-entry, .repo-file-dir-entry:hover {
+    font-size: 14px;
+}
+
+.repo-file-dir-entry:hover {
+    background-color: #f7f7f7
+}
+
+/* if the changes did not apply, try clear the cache*/

@@ -11,9 +11,10 @@ using System;
 namespace BitHub.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180328011518_AddRepoModelProperties")]
+    partial class AddRepoModelProperties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -123,7 +124,7 @@ namespace BitHub.Data.Migrations
 
                     b.HasIndex("TagID");
 
-                    b.ToTable("Tagments");
+                    b.ToTable("RepoTagmentModel");
                 });
 
             modelBuilder.Entity("BitHub.Models.Repository.RepoTagModel", b =>
@@ -136,7 +137,7 @@ namespace BitHub.Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("Tags");
+                    b.ToTable("RepoTagModel");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
