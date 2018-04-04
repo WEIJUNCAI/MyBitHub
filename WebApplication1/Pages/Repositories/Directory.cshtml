@@ -7,7 +7,6 @@
 <div class="container-fluid body-content">
     <div class="row px-5 bg-light">
 
-
         <div class="col-md-6 mt-3">
             <ul class="list-inline mb-0">
                 <li class="list-inline-item mx-1">
@@ -154,7 +153,7 @@
                             </li>
                             @foreach (var parentDir in Model.RepoInfo_Additional.ParentDirectories)
                             {
-                                <li>
+                                <li class="breadcrumb-item">
                                     <a asp-page="./Directory"
                                        asp-route-Owner="@Model.RepoInfo.Owner"
                                        asp-route-Reponame="@Model.RepoInfo.RepoName"
@@ -187,16 +186,33 @@
                                     </div>
                                 </li>
 
+
                                 <li class="list-group-item py-1 repo-file-dir-entry">
                                     <div class="row">
                                         <div class="col">
-                                            <a href="#">
-                                                <strong> .. </strong>
-                                            </a>
+                                            @if (Model.RepoInfo_Additional.ParentDirectories.Any())
+                                            {
+                                                <a asp-page="Directory"
+                                                   asp-route-Owner="@Model.RepoInfo.Owner"
+                                                   asp-route-Reponame="@Model.RepoInfo.RepoName"
+                                                   asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
+                                                   asp-route-RequestDir="@Model.ReconstructPath(Model.RepoInfo_Additional.ParentDirectories.Last())">
+                                                    <strong> .. </strong>
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a asp-page="Index"
+                                                   asp-route-Owner="@Model.RepoInfo.Owner"
+                                                   asp-route-Reponame="@Model.RepoInfo.RepoName">
+                                                    <strong> .. </strong>
+                                                </a>
+                                            }
                                         </div>
 
                                     </div>
                                 </li>
+
 
                                 @foreach (var entry in Model.RepoInfo_Additional.TableEntries)
                                 {
@@ -209,16 +225,20 @@
                                                        asp-route-Owner="@Model.RepoInfo.Owner"
                                                        asp-route-Reponame="@Model.RepoInfo.RepoName"
                                                        asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
-                                                       asp-route-RequestDir="@entry.FriendlyPath">
+                                                       asp-route-RequestDir="@entry.RelativePath">
                                                         <img class="mr-1" src="~/images/octicons/file-directory.svg">
-                                                        @entry.FriendlyPath
+                                                        @entry.FriendlyName
                                                     </a>
                                                 }
                                                 else
                                                 {
-                                                    <a href="#">
+                                                    <a asp-page="File"
+                                                       asp-route-Owner="@Model.RepoInfo.Owner"
+                                                       asp-route-Reponame="@Model.RepoInfo.RepoName"
+                                                       asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
+                                                       asp-route-RequestFile="@entry.RelativePath">
                                                         <img class="mr-1" src="~/images/octicons/file.svg" />
-                                                        @entry.FriendlyPath
+                                                        @entry.FriendlyName
                                                     </a>
                                                 }
                                             </div>

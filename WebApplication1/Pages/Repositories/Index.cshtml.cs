@@ -152,7 +152,8 @@ namespace BitHub.Pages.Repositories
                 tableEntries.Add(new RepoListEntryViewModel
                 {
                     EntryType = EntryType.Directory,
-                    FriendlyPath = Path.GetFileName(dir),
+                    RelativePath = dir,
+                    FriendlyName = Path.GetFileName(dir),
                     LatestCommit = commits.Current
                 }
                 );
@@ -163,7 +164,8 @@ namespace BitHub.Pages.Repositories
                 tableEntries.Add(new RepoListEntryViewModel
                 {
                     EntryType = EntryType.File,
-                    FriendlyPath = Path.GetFileName(file),
+                    RelativePath = file,
+                    FriendlyName = Path.GetFileName(file),
                     LatestCommit = commits.Current
                 }
                 );

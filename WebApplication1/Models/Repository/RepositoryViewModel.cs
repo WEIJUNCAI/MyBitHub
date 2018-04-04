@@ -40,7 +40,8 @@ namespace BitHub.Models.Repository
     public class RepoListEntryViewModel
     {
         public EntryType EntryType { get; set; }
-        public string FriendlyPath { get; set; }
+        public string FriendlyName { get; set; }
+        public string RelativePath { get; set; }
         public Commit LatestCommit { get; set; }
     }
 
