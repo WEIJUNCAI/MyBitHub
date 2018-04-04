@@ -1,9 +1,9 @@
 ﻿using System;
-using System.IO;
-using System.Diagnostics;
-using System.Text;
 using System.Net;
+using System.IO;
+using System.Text;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -19,39 +19,39 @@ using LibGit2Sharp;
 
 namespace BitHub.Pages.Repositories
 {
-    public class DirectoryModel : PageModel
+    public class FileModel : PageModel
     {
-
         private readonly ApplicationDbContext _appDbContext;
         private readonly ILogger<IndexModel> _logger;
-        private readonly IDirectoryManager _directoryManager;
-        // need to create the Repository object in handler using the repo path
-        // and the Repository class does not support configuration after creation
-        // does not know how to do this in a built in container
-        // so we create it manually and register it for disposal
-
+        private readonly IFileManager _fileManager;
+        private readonly IFileInfoManager _fileInfoManager;
         private Repository _repository;
 
         public RepositoryInfoModel RepoInfo { get; set; }
 
         public RepositoryViewModel RepoInfo_Additional { get; set; }
 
+        public FileViewModel FileInfo { get; set; }
 
-        public DirectoryModel(
-            ApplicationDbContext applicationDbContext,
+
+        public FileModel(
+            ApplicationDbContext appDbContext,
             ILogger<IndexModel> logger,
-            IDirectoryManager directoryManager)
+            IFileManager fileManager,
+            IFileInfoManager fileInfoManager)
         {
-            _appDbContext = applicationDbContext;
+            _appDbContext = appDbContext;
             _logger = logger;
-            _directoryManager = directoryManager;
+            _fileManager = fileManager;
+            _fileInfoManager = fileInfoManager;
+
             // initialize the supplementary repo view model
             RepoInfo_Additional = new RepositoryViewModel();
+            FileInfo = new FileViewModel();
         }
 
-
         public async Task<IActionResult> OnGetAsync(
-            string owner, string reponame, string branch, string requestdir)
+            string owner, string reponame, string branch, string requestfile)
         {
             // Retrieve the requested repo informantion from DB
             RepoInfo = await _appDbContext.Repositories.FirstOrDefaultAsync(
@@ -67,8 +67,8 @@ namespace BitHub.Pages.Repositories
             // however they are not decoded in model binding, we have to manually decode them
 
             string decodedBranch = WebUtility.UrlDecode(branch);
-            string decodedRequestDir = WebUtility.UrlDecode(requestdir);
-            string reqestDirFullPath = Path.Combine(RepoInfo.RootPath, decodedRequestDir);
+            string decodedRequestFile = WebUtility.UrlDecode(requestfile);
+            string reqestFileFullPath = Path.Combine(RepoInfo.RootPath, decodedRequestFile);
 
             if (_repository.Head.FriendlyName != decodedBranch && !CheckoutBranch(decodedBranch))
             {
@@ -76,23 +76,17 @@ namespace BitHub.Pages.Repositories
                 return NotFound();
             }
 
-            if (!GetAdditionalRepoVM(decodedRequestDir))
+            if (!GetAdditionalRepoVM(decodedRequestFile))
             {
                 _logger.LogError($"\nFailed retrieving additional repository informantion for repository \"{owner}/{reponame}\"");
                 return NotFound();
             }
 
-            IEnumerable<string> dirs, files;
-            if (!GetRelativeDirsAndFiles(reqestDirFullPath, out dirs, out files))
-            {
-                _logger.LogError($"\nFailed retrieving file and directory info under path {RepoInfo.RootPath}");
-                return NotFound();
-            }
-
-            RepoInfo_Additional.TableEntries = GetTableEntries(dirs, files);
+            GetFileVM(RepoInfo.RootPath, decodedRequestFile);
 
             return Page();
         }
+
 
 
         /////////////////////////////////////////////////////////////////////
@@ -145,16 +139,28 @@ namespace BitHub.Pages.Repositories
             return true;
         }
 
-
-        // split the directory into individual levels
-        // returns the parent levels and the last level
-        private Tuple<IEnumerable<string>, string> SplitDir(string dir)
+        private bool GetFileVM(string repoRootPath, string relativeFilePath)
         {
-            string[] allLevels = dir.Split('\\');
+            string fullFilePath = Path.Combine(repoRootPath, relativeFilePath);
+            StringBuilder sb = new StringBuilder();
+            uint lineCount = 0;
+            using (StreamReader reader = new StreamReader(_fileManager.Open(fullFilePath, FileMode.Open), Encoding.UTF8))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    ++lineCount;
+                    sb.AppendLine(/*WebUtility.HtmlEncode*/(line));
+                }
+            }
 
-            string lastLevel = allLevels.Last();
-            IEnumerable<string> parentLevels = allLevels.Take(allLevels.Length - 1);
-            return new Tuple<IEnumerable<string>, string>(parentLevels, lastLevel);
+            _fileInfoManager.SetFilePath(fullFilePath);
+            FileInfo.Content = sb.ToString();
+            FileInfo.LineCount = lineCount;
+            FileInfo.Size = _fileInfoManager.GetLength();
+            FileInfo.Language = Path.GetExtension(relativeFilePath).Substring(1);
+            FileInfo.LatestCommt = GetLatestCommits(RepoInfo.RootPath, new string[] {relativeFilePath}, false).First();
+            return true;
         }
 
 
@@ -178,101 +184,13 @@ namespace BitHub.Pages.Repositories
             return false;
         }
 
-        // 
-        private IEnumerable<RepoListEntryViewModel> GetTableEntries(IEnumerable<string> dirs, IEnumerable<string> files)
-        {
-            var tableEntries = new List<RepoListEntryViewModel>();
 
-            var allPaths = dirs.Concat(files);
-
-            var commits = GetLatestCommits(RepoInfo.RootPath, allPaths).GetEnumerator();
-            commits.MoveNext();
-
-            foreach (string dir in dirs)
-            {
-                tableEntries.Add(new RepoListEntryViewModel
-                {
-                    EntryType = EntryType.Directory,
-                    RelativePath = dir,
-                    FriendlyName = Path.GetFileName(dir),
-                    LatestCommit = commits.Current
-                }
-                );
-                commits.MoveNext();
-            }
-            foreach (string file in files)
-            {
-                tableEntries.Add(new RepoListEntryViewModel
-                {
-                    EntryType = EntryType.File,
-                    RelativePath = file,
-                    FriendlyName = Path.GetFileName(file),
-                    LatestCommit = commits.Current
-                }
-                );
-                commits.MoveNext();
-            }
-
-            return tableEntries;
-        }
-
-        // get the FULL paths of all directories and files under a specific directory
-        private bool GetDirsAndFiles(
-            string targetDir, out IEnumerable<string> dirs, out IEnumerable<string> files)
-        {
-            try
-            {
-                dirs = _directoryManager.GetDirectories(targetDir);
-                files = _directoryManager.GetFiles(targetDir);
-            }
-            catch (Exception ex)
-            {
-                dirs = new string[0];
-                files = new string[0];
-                _logger.LogError($"\nException thrown:{ex.Message}");
-                return false;
-            }
-            return true;
-        }
-
-        // get all RELATIVE directories and files under a specific root
-        // will skip dirs and files that start with ".", which is assumed to be hidden
-        // *** TODO *** 
-        // This skip logic might be incorrect
-
-        private bool GetRelativeDirsAndFiles(
-            string targetDir, out IEnumerable<string> relativeDirs, out IEnumerable<string> relativeFiles)
-        {
-            IEnumerable<string> fullPathDirs, fullPathFiles;
-            if (!GetDirsAndFiles(targetDir, out fullPathDirs, out fullPathFiles))
-            {
-                relativeDirs = new string[0];
-                relativeFiles = new string[0];
-                return false;
-            }
-
-            relativeDirs = fullPathDirs
-                 .Select(dir => GetRelativePath(RepoInfo.RootPath, dir))
-                 .Where(dir => !dir.StartsWith('.')).ToArray();
-
-            relativeFiles = fullPathFiles
-                 .Select(file => GetRelativePath(RepoInfo.RootPath, file))
-                 .Where(file => !file.StartsWith('.')).ToArray();
-
-            return true;
-
-        }
-
-        // get the latest commit associated with a folder or file
-        //  should have been implemented with libgit2sharp, but
-        //  the "QueryBy(file)" method apparently has serious bug
-        //  so we have to use command line git
-        private IEnumerable<Commit> GetLatestCommits(string repoRootPath, IEnumerable<string> targetRelativePaths)
+        private IEnumerable<Commit> GetLatestCommits(string repoRootPath, IEnumerable<string> targetRelativePaths, bool includeRename)
         {
             List<Commit> commits = new List<Commit>();
             try
             {
-                var shas = GetLatestCommitShas(repoRootPath, targetRelativePaths);
+                var shas = GetLatestCommitShas(repoRootPath, targetRelativePaths, includeRename);
 
                 foreach (string sha in shas)
                     commits.Add((sha.Length == 0) ? null : _repository.Lookup<Commit>(sha));
@@ -300,7 +218,12 @@ namespace BitHub.Pages.Repositories
         // although very unlikely, the description might also contain the same command
         // which could lead to misinterpretation.
 
-        private IEnumerable<string> GetLatestCommitShas(string repoRootPath, IEnumerable<string> targetRelativePaths)
+
+        // in the directory entries, the latest commit includes rename history,
+        // which means we should use "--follow" option when rendering directory page;
+        // file page, however, does not go beyond rename.
+
+        private IEnumerable<string> GetLatestCommitShas(string repoRootPath, IEnumerable<string> targetRelativePaths, bool includeRename)
         {
             List<string> commitShas = new List<string>();
 
@@ -316,10 +239,10 @@ namespace BitHub.Pages.Repositories
 
             process.StartInfo = startInfo;
             process.Start();
-
+            string renameSwitch = includeRename ? "--follow" : string.Empty;
             foreach (string path in targetRelativePaths)
             {
-                string command = $"git log -n 1 --follow \"{path}\"\r\n";
+                string command = $"git log -n 1 {renameSwitch} \"{path}\"\r\n";
                 process.StandardInput.Write(command);
 
                 while (true)
@@ -341,20 +264,21 @@ namespace BitHub.Pages.Repositories
             return commitShas;
         }
 
-        private string GetRelativePath(string baseFullPath, string childFullPath)
-        {
-            if (!childFullPath.StartsWith(baseFullPath))
-                return null;
 
-            return childFullPath.Substring(baseFullPath.Length + 1);
+        // split the directory into individual levels
+        // returns the parent levels and the last level
+        private Tuple<IEnumerable<string>, string> SplitDir(string dir)
+        {
+            string[] allLevels = dir.Split('\\');
+
+            string lastLevel = allLevels.Last();
+            IEnumerable<string> parentLevels = allLevels.Take(allLevels.Length - 1);
+            return new Tuple<IEnumerable<string>, string>(parentLevels, lastLevel);
         }
 
         // Helper method calculate the elapsed time for files and commits
         // elapsed time expressed in days, hours, min
-        // *** TODO ***: 
-        // reimplement to express elapsed time in month and years
-        // Noda time might be a good alternative.
-
+        // TODO: reimplement to express elapsed time in month and years
         public string GetTimeDifference(DateTimeOffset timeStamp)
         {
             TimeSpan elapsedTime = DateTimeOffset.UtcNow - timeStamp;
@@ -373,9 +297,6 @@ namespace BitHub.Pages.Repositories
             return sb.ToString();
         }
 
-        // used by razor view to reconstruct the path from repository root to a
-        // specific sub-directory, to fill out the route parameter of breadcrumb link
-
         public string ReconstructPath(string lastLevel)
         {
             string result = string.Empty;
@@ -388,5 +309,4 @@ namespace BitHub.Pages.Repositories
             return result;
         }
     }
-
 }

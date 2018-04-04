@@ -45,13 +45,23 @@ a {
     margin: 0;
 }
 
+body > nav.navbar {
+    background-color: #24292e;
+}
+
 
 .nav-tabs > .nav-item > .active, .nav-tabs > .nav-item > .active:hover, .nav-tabs > .nav-item > .active:focus {
     border-top-width: 3px;
     border-top-color: #d45500;
+    border-left-color: #dee2e6;
+    border-right-color: #dee2e6;
 }
 
-.input-group-text {
+.nav-tabs .nav-link:focus, .nav-tabs .nav-link:hover {
+    border-color: transparent;
+}
+
+div > .input-group-sm > .input-group-prepend > .input-group-text {
     border-color: black;
 }
 
@@ -91,5 +101,59 @@ a {
 .repo-file-dir-entry:hover {
     background-color: #f7f7f7
 }
+
+
+.file-info-divider {
+    display: inline-block;
+    width: 1px;
+    height: 18px;
+    margin-right: 3px;
+    margin-left: 3px;
+    vertical-align: middle;
+    background-color: #ddd;
+}
+
+div > pre > .code-block {
+    font-size: 13px;
+    background-color: white;
+}
+
+tr > td.hljs-ln-numbers {
+    padding-right: 10px;
+    color: rgba(27,31,35,0.3);
+    cursor: pointer;
+}
+
+    tr > td.hljs-ln-numbers:hover {
+        color: rgba(27,31,35,0.6);
+    }
+
+tr > td.hljs-ln-code {
+    padding-left: 10px;
+}
+
+.dropdown-menu:before {
+    position: absolute;
+    top: -7px;
+    right: 9px;
+    display: inline-block;
+    border-right: 7px solid transparent;
+    border-bottom: 7px solid #ccc;
+    border-left: 7px solid transparent;
+    border-bottom-color: rgba(0, 0, 0, 0.2);
+    content: '';
+}
+
+.dropdown-menu:after {
+    position: absolute;
+    top: -6px;
+    right: 10px;
+    display: inline-block;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #ffffff;
+    border-left: 6px solid transparent;
+    content: '';
+}
+
 
 /* if the changes did not apply, try clear the cache*/

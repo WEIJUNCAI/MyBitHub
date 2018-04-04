@@ -69,9 +69,9 @@
 
 
     <div class="row px-0 pt-2 bg-light">
-        <div class="col-md-12 mx-0">
+        <div class="col-md-12 mx-0 px-0">
             <nav>
-                <ul class="nav nav-tabs">
+                <ul class="nav nav-tabs px-4">
                     <li class="nav-item">
                         <a class="nav-item nav-link ml-5 text-dark active" id="nav-home-tab" data-toggle="tab" href="#nav-code">
                             <img src="~/images/octicons/code.svg"> Code
@@ -113,7 +113,7 @@
 
     <div class="tab-content mt-4 " id="nav-tabContent">
         <div class="tab-pane fade show active" id="nav-code">
-            <div class="container">
+            <div class="container mx-auto px-0">
 
                 <div class="row">
                     <div class="col">
@@ -240,16 +240,20 @@
                                                        asp-route-Owner="@Model.RepoInfo.Owner"
                                                        asp-route-Reponame="@Model.RepoInfo.RepoName"
                                                        asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
-                                                       asp-route-RequestDir="@entry.FriendlyPath">
+                                                       asp-route-RequestDir="@entry.RelativePath">
                                                         <img class="mr-1" src="~/images/octicons/file-directory.svg">
-                                                        @entry.FriendlyPath
+                                                        @entry.FriendlyName
                                                     </a>
                                                 }
                                                 else
                                                 {
-                                                    <a href="#">
+                                                    <a asp-page="File"
+                                                       asp-route-Owner="@Model.RepoInfo.Owner"
+                                                       asp-route-Reponame="@Model.RepoInfo.RepoName"
+                                                       asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
+                                                       asp-route-RequestFile="@entry.RelativePath">
                                                         <img class="mr-1" src="~/images/octicons/file.svg" />
-                                                        @entry.FriendlyPath
+                                                        @entry.FriendlyName
                                                     </a>
                                                 }
                                             </div>

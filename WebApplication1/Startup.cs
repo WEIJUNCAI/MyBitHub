@@ -89,6 +89,7 @@ namespace BitHub
 
             services.AddSingleton<IFileManager, LocalFileManager>();
 
+            services.AddScoped<IFileInfoManager, LocalFileInfo>();
             // container will call Dispose for IDisposable types it creates
             //services.AddScoped<Repository>();
 

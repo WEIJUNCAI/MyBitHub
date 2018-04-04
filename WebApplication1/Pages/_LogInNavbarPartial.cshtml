@@ -5,7 +5,7 @@
 @inject UserManager<ApplicationUser> userManager
 
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-fixed-top py-1" style="background-color: #e3f2fd;">
+<nav class="navbar navbar-expand-lg navbar-dark navbar-fixed-top py-1">
     <div class="container my-0">
 
         <div class="navbar-header">
@@ -27,6 +27,7 @@
                     <li class="nav-item"><a class="nav-link" asp-page="/Schedules/Index">Schedules</a></li>
                     <li class="nav-item"><a class="nav-link" asp-page="/Repositories/Index" asp-route-Owner="libgit2" asp-route-Reponame="libgit2sharp">Test Repo Home</a></li>
                     <li class="nav-item"><a class="nav-link" asp-page="/Repositories/Directory" asp-route-Owner="libgit2" asp-route-Reponame="libgit2sharp" asp-route-Branch="master" asp-route-RequestDir="LibGit2Sharp">Test Repo Dir</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-page="/Repositories/File" asp-route-Owner="libgit2" asp-route-Reponame="libgit2sharp" asp-route-Branch="master" asp-route-RequestFile="LibGit2Sharp/Blob.cs">Test Repo File</a></li>
 
                 </ul>
 
@@ -62,7 +63,7 @@
                     <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
                         <img src="~/images/octicons/plus.svg" />
                     </a>
-                    <div class="dropdown-menu">
+                    <div class="dropdown-menu dropdown-menu-right">
                         <a asp-page="/Repositories/New" class="dropdown-item">New repository</a>
                         <a asp-page="/Repositories/Import" class="dropdown-item">Import repository</a>
                     </div>
@@ -72,7 +73,7 @@
                     <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
                         <img src="~/images/octicons/person.svg" />
                     </a>
-                    <div class="dropdown-menu">
+                    <div class="dropdown-menu dropdown-menu-right">
                         <h4 class="dropdown-header">
                             Signed in as
                             <br />
