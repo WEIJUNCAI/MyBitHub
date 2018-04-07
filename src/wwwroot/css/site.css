@@ -155,13 +155,13 @@ tr > td.hljs-ln-code {
     content: '';
 }
 
-
 div.editor-div {
     height: 600px;
 }
 
 .row .col .editor-div .ace_gutter {
     background: #fff;
+    padding-right: 10px;
 }
 
 ol.edit-page-breadcrumb {
@@ -180,6 +180,10 @@ li.edit-page-nav-item > .nav-link.active, li.edit-page-nav-item > .nav-link.acti
     border-left-color: #d1d5da;
     border-top-color: transparent;
     border-bottom-color: transparent;
+}
+
+#EditTab {
+    border-left-color: transparent;
 }
 
 div.d2h-file-wrapper {

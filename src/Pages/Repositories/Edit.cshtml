@@ -122,7 +122,11 @@
                                             </li>
                                         }
                                         <li class="breadcrumb-item d-inline-flex">
-                                            <input class="form-control" id="modified-file-name" placeholder="Name your file..." value="@Model.RepoInfo_Additional.CurrentPath">
+                                            <input asp-for="Input.FileName"
+                                                   class="form-control"
+                                                   id="modified-file-name"
+                                                   placeholder="Name your file..."
+                                                   value="@Model.RepoInfo_Additional.CurrentPath">
                                         </li>
                                     </ol>
                                 </li>
@@ -151,7 +155,7 @@
 
                                 <ul class="nav nav-tabs file-header bg-light" id="myTab" role="tablist">
                                     <li class="nav-item edit-page-nav-item">
-                                        <a class="nav-link active text-dark" data-toggle="tab" href="#edit-page">
+                                        <a class="nav-link active text-dark" id="EditTab" data-toggle="tab" href="#edit-page">
                                             <img src="~/images/octicons/code.svg"> Edit file
                                         </a>
                                     </li>
@@ -170,7 +174,7 @@
                                         <div class="row">
                                             <div class="col">
                                                 <div class="editor-div" id="editor"></div>
-                                                <textarea id="editor-code-content" style="display:none"></textarea>
+                                                <textarea asp-for="Input.Content" id="editor-code-content" style="display:none"></textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -194,21 +198,31 @@
                                 <div class="card-body">
                                     <h5>Commit changes</h5>
                                     <div class="form-group my-3">
-                                        <input class="form-control input-contrast" placeholder="Update @Model.RepoInfo_Additional.CurrentPath">
+                                        <input asp-for="Input.Title"
+                                               class="form-control input-contrast"
+                                               placeholder="Update @Model.RepoInfo_Additional.CurrentPath">
                                     </div>
                                     <div class="form-group my-3">
-                                        <textarea class="form-control input-contrast form-textarea" placeholder="Add an additional extended description..."></textarea>
+                                        <textarea asp-for="Input.Description"
+                                                  class="form-control input-contrast form-textarea"
+                                                  placeholder="Add an additional extended description..."></textarea>
                                     </div>
                                     <div class="form-group">
                                         <div class="custom-control custom-radio mb-2">
-                                            <input type="radio" id="customRadio1" name="customRadio" class="custom-control-input" checked="checked" onclick="showEditBranchInput(false)">
+                                            <input type="radio" 
+                                                   asp-for="Input.CreateNewBranch"
+                                                   value="@Model.Radios[0].Id"
+                                                   id="customRadio1" name="customRadio" class="custom-control-input" checked="checked" onclick="showEditBranchInput(false)">
                                             <label class="custom-control-label" for="customRadio1">
                                                 <img class="mx-1 align-baseline" src="~/images/octicons/git-commit.svg"> Commit directly to the
                                                 <span class="branch-name">@Model.RepoInfo_Additional.CurrentBranch.FriendlyName</span> branch.
                                             </label>
                                         </div>
                                         <div class="custom-control custom-radio">
-                                            <input type="radio" id="customRadio2" name="customRadio" class="custom-control-input" onclick="showEditBranchInput(true)">
+                                            <input asp-for="Input.CreateNewBranch" 
+                                                   type="radio" id="customRadio2"
+                                                   value="@Model.Radios[1].Id"
+                                                   name="customRadio" class="custom-control-input" onclick="showEditBranchInput(true)">
                                             <label class="custom-control-label" for="customRadio2">
                                                 <img class="mx-1 align-baseline" src="~/images/octicons/git-pull-request.svg"> Create a
                                                 <strong>new branch</strong> for this commit and start a pull request.
@@ -216,7 +230,8 @@
                                         </div>
                                     </div>
                                     <div class="ml-4 mt-2 col-3" id="new-branch-name" hidden>
-                                        <input class="form-control img-input" placeholder="New branch name...">
+                                        <input asp-for="Input.NewBranchName" class="form-control img-input" placeholder="New branch name...">
+                                        <span asp-validation-for="Input.NewBranchName"></span>
                                     </div>
 
                                 </div>
@@ -236,9 +251,7 @@
                     </div>
                 </form>
 
-
-
-
+                <div asp-validation-summary="All" class="text-danger"></div>
 
             </div>
         </div>
@@ -262,4 +275,8 @@
         this.EditBlock.initEditor();
     </script>
     <script src="~/js/postFormActions.js"></script>
+}
+
+@section ValidationScripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }
