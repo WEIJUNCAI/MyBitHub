@@ -50,7 +50,7 @@ body > nav.navbar {
 }
 
 
-.nav-tabs > .nav-item > .active, .nav-tabs > .nav-item > .active:hover, .nav-tabs > .nav-item > .active:focus {
+nav > .nav-tabs > .nav-item > .active, nav > .nav-tabs > .nav-item > .active:hover, nav > .nav-tabs > .nav-item > .active:focus {
     border-top-width: 3px;
     border-top-color: #d45500;
     border-left-color: #dee2e6;
@@ -155,5 +155,88 @@ tr > td.hljs-ln-code {
     content: '';
 }
 
+div.editor-div {
+    height: 600px;
+}
+
+.row .col .editor-div .ace_gutter {
+    background: #fff;
+    padding-right: 10px;
+}
+
+ol.edit-page-breadcrumb {
+    font-size: 18px;
+}
+
+.clipboard-btn {
+    background-color: #eff3f6;
+    background-image: linear-gradient(-180deg, #fafbfc 0%, #eff3f6 90%);
+    border: 1px solid rgba(27,31,35,0.2);
+}
+
+li.edit-page-nav-item > .nav-link.active, li.edit-page-nav-item > .nav-link.active:hover {
+    border-radius: 0;
+    border-right-color: #d1d5da;
+    border-left-color: #d1d5da;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+}
+
+#EditTab {
+    border-left-color: transparent;
+}
+
+div.d2h-file-wrapper {
+    border-color: transparent;
+}
+
+div.d2h-file-header {
+    border-color: transparent;
+    background-color: #fff;
+}
+
+.d2h-file-name {
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    font-weight: 500;
+}
+
+span.d2h-tag {
+    display: inline-block;
+    padding: .25em .4em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25rem;
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+}
+
+.input-contrast {
+    background-color: #fafbfc;
+    box-shadow: inset 0 1px 2px rgba(27,31,35,0.075);
+}
+
+.form-textarea {
+    height: 120px;
+    min-height: 100px;
+}
+
+.branch-name {
+    display: inline-block;
+    padding: 2px 6px;
+    font: 12px "SFMono-Regular",Consolas,"Liberation Mono",Menlo,Courier,monospace;
+    color: rgba(27,31,35,0.6);
+    background-color: #eaf5ff;
+    border-radius: 3px;
+}
+
+.img-input {
+    text-indent: 15px;
+    background-image: url(../images/octicons/git-branch.svg);
+    background-repeat: no-repeat;
+    background-position: 10px 10px;
+}
 
 /* if the changes did not apply, try clear the cache*/

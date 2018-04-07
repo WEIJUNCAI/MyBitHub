@@ -1,0 +1,282 @@
+﻿@page "{Owner}/{Reponame}/{Branch}/{RequestFile}"
+@model BitHub.Pages.Repositories.EditModel
+@{
+    ViewData["Title"] = "Edit";
+}
+
+@section PageAdditionalHeader {
+    @await Html.PartialAsync("_EditPageScripts_Pre")
+}
+
+<div class="container-fluid body-content">
+    <div class="row px-5 bg-light">
+
+        <div class="col-md-6 mt-3">
+            <ul class="list-inline mb-0">
+                <li class="list-inline-item mx-1">
+                    <img src="~/images/octicons/repo.svg">
+                </li>
+                <li class="list-inline-item">
+                    <ol class="breadcrumb my-0 bg-light">
+                        <li class="breadcrumb-item">
+                            <a href="#">@Model.RepoInfo.Owner</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <strong><a asp-page="./Index" asp-route-Owner="@Model.RepoInfo.Owner" asp-route-Reponame="@Model.RepoInfo.RepoName" class="active">@Model.RepoInfo.RepoName</a></strong>
+                        </li>
+                    </ol>
+                </li>
+            </ul>
+        </div>
+
+        <div class="col-md-6 mt-4">
+            <div class="row justify-content-center">
+                <div class="col-md-4 px-0">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend">
+                            <button type="button" class="btn btn-outline-dark">
+                                <img src="~/images/octicons/eye.svg"> Watch
+                            </button>
+                            <div class="input-group-text bg-white rounded-right" id="btnGroupAddon">@Model.RepoInfo.WatchCount</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 px-0">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend">
+                            <button type="button" class="btn btn-outline-dark">
+                                <img src="~/images/octicons/star.svg"> Star
+                            </button>
+                            <div class="input-group-text bg-white rounded-right" id="btnGroupAddon">@Model.RepoInfo.StarCount</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 px-0">
+                    <div class="input-group input-group-sm">
+
+                        <div class="input-group-prepend">
+                            <button type="button" class="btn btn-outline-dark">
+                                <img src="~/images/octicons/repo-forked.svg"> Fork
+                            </button>
+                            <div class="input-group-text bg-white rounded-right" id="btnGroupAddon">@Model.RepoInfo.ForkCount</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row px-0 pt-2 bg-light">
+        <div class="col-md-12 mx-0 px-0">
+            <nav>
+                <ul class="nav nav-tabs px-4">
+                    <li class="nav-item">
+                        <a class="nav-item nav-link ml-5 text-dark active" id="nav-home-tab" data-toggle="tab" href="#nav-code">
+                            <img src="~/images/octicons/code.svg"> Code
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-item nav-link text-dark" id="nav-profile-tab" data-toggle="tab" href="#nav-issues">
+                            <img src="~/images/octicons/issue-opened.svg"> Issues
+                            <span class="badge badge-light">153</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-item nav-link text-dark" id="nav-contact-tab" data-toggle="tab" href="#nav-pr">
+                            <img src="~/images/octicons/git-pull-request.svg"> Pull requests
+                            <span class="badge badge-light">35</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <div class="tab-content mt-4 " id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-code">
+            <div class="container mx-auto">
+
+
+                <form method="POST" id="edit-page-form">
+                    <div class="row my-2">
+                        <div class="col">
+                            <ul class="list-inline my-0">
+                                <li class="list-inline-item">
+                                    <ol class="breadcrumb my-2 px-1 py-1 bg-white edit-page-breadcrumb">
+                                        <li class="breadcrumb-item">
+                                            <strong><a asp-page="./Index" asp-route-Owner="@Model.RepoInfo.Owner" asp-route-Reponame="@Model.RepoInfo.RepoName" class="active">@Model.RepoInfo.RepoName</a></strong>
+                                        </li>
+                                        @{ int curLevel = 0; }
+                                        @foreach (var parentDir in Model.RepoInfo_Additional.ParentDirectories)
+                                        {
+                                            <li class="breadcrumb-item">
+                                                <a asp-page="./Directory"
+                                                   asp-route-Owner="@Model.RepoInfo.Owner"
+                                                   asp-route-Reponame="@Model.RepoInfo.RepoName"
+                                                   asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
+                                                   asp-route-RequestDir="@Model.ReconstructPath(curLevel++)">@parentDir</a>
+                                            </li>
+                                        }
+                                        <li class="breadcrumb-item d-inline-flex">
+                                            <input asp-for="Input.FileName"
+                                                   class="form-control"
+                                                   id="modified-file-name"
+                                                   placeholder="Name your file..."
+                                                   value="@Model.RepoInfo_Additional.CurrentPath">
+                                        </li>
+                                    </ol>
+                                </li>
+                                <li class="list-inline-item">
+                                    <button class="btn btn-sm clipboard-btn py-2 px-3">
+                                        <img class="mx-auto d-block" src="~/images/octicons/clippy.svg">
+                                    </button>
+                                </li>
+                                <li class="list-inline-item">
+                                    or
+                                    <a asp-page="./File"
+                                       asp-route-Owner="@Model.RepoInfo.Owner"
+                                       asp-route-Reponame="@Model.RepoInfo.RepoName"
+                                       asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
+                                       asp-route-RequestFile="@Model.FileInfo.FullPath">cancel</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="card" id="">
+
+                                <ul class="nav nav-tabs file-header bg-light" id="myTab" role="tablist">
+                                    <li class="nav-item edit-page-nav-item">
+                                        <a class="nav-link active text-dark" id="EditTab" data-toggle="tab" href="#edit-page">
+                                            <img src="~/images/octicons/code.svg"> Edit file
+                                        </a>
+                                    </li>
+                                    <li class="nav-item edit-page-nav-item">
+                                        <a class="nav-link text-dark" data-toggle="tab" href="#preview-page" onclick="EditBlock.getDiff()">
+                                            <img src="~/images/octicons/eye.svg"> Preview changes
+                                        </a>
+                                    </li>
+
+                                </ul>
+
+
+
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="edit-page">
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="editor-div" id="editor"></div>
+                                                <textarea asp-for="Input.Content" id="editor-code-content" style="display:none"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="preview-page">
+                                        <div class="row">
+                                            <div class="col">
+                                                <div id="diff-preview-div"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row my-3">
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5>Commit changes</h5>
+                                    <div class="form-group my-3">
+                                        <input asp-for="Input.Title"
+                                               class="form-control input-contrast"
+                                               placeholder="Update @Model.RepoInfo_Additional.CurrentPath">
+                                    </div>
+                                    <div class="form-group my-3">
+                                        <textarea asp-for="Input.Description"
+                                                  class="form-control input-contrast form-textarea"
+                                                  placeholder="Add an additional extended description..."></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="custom-control custom-radio mb-2">
+                                            <input type="radio" 
+                                                   asp-for="Input.CreateNewBranch"
+                                                   value="@Model.Radios[0].Id"
+                                                   id="customRadio1" name="customRadio" class="custom-control-input" checked="checked" onclick="showEditBranchInput(false)">
+                                            <label class="custom-control-label" for="customRadio1">
+                                                <img class="mx-1 align-baseline" src="~/images/octicons/git-commit.svg"> Commit directly to the
+                                                <span class="branch-name">@Model.RepoInfo_Additional.CurrentBranch.FriendlyName</span> branch.
+                                            </label>
+                                        </div>
+                                        <div class="custom-control custom-radio">
+                                            <input asp-for="Input.CreateNewBranch" 
+                                                   type="radio" id="customRadio2"
+                                                   value="@Model.Radios[1].Id"
+                                                   name="customRadio" class="custom-control-input" onclick="showEditBranchInput(true)">
+                                            <label class="custom-control-label" for="customRadio2">
+                                                <img class="mx-1 align-baseline" src="~/images/octicons/git-pull-request.svg"> Create a
+                                                <strong>new branch</strong> for this commit and start a pull request.
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4 mt-2 col-3" id="new-branch-name" hidden>
+                                        <input asp-for="Input.NewBranchName" class="form-control img-input" placeholder="New branch name...">
+                                        <span asp-validation-for="Input.NewBranchName"></span>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <button class="btn btn-success" data-disable-with="Commiting changes..." type="submit">Commit changes</button>
+                            <a class="btn btn-outline-danger"
+                               asp-page="./File"
+                               asp-route-Owner="@Model.RepoInfo.Owner"
+                               asp-route-Reponame="@Model.RepoInfo.RepoName"
+                               asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
+                               asp-route-RequestFile="@Model.FileInfo.FullPath">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+            </div>
+        </div>
+
+        <div id="original-file-name" style="display:none">@Model.RepoInfo_Additional.CurrentPath</div>
+        <div id="original-file-text" style="display:none">@Model.FileInfo.Content</div>
+
+        <div class="tab-pane fade" id="nav-issues">
+            aliqua ullamco irure incididunt irure non esse consectetur nostrud minim non minim occaecat. Amet duis do nisi
+            duis veniam non est eiusmod tempor incididunt tempor dolor ipsum in qui sit. Exercitation mollit sit culpa
+        </div>
+        <div class="tab-pane fade" id="nav-pr">
+            aliqua ullamco irure incididunt irure non esse consectetur nostrud minim non minim occaecat. Amet duis do nisi
+            duis veniam non est eiusmod tempor incididunt tempor dolor ipsum in qui sit. Exercitation mollit sit culpa
+        </div>
+    </div>
+</div>
+
+@section PageAdditionalPostScripts {
+    <script>
+        this.EditBlock.initEditor();
+    </script>
+    <script src="~/js/postFormActions.js"></script>
+}
+
+@section ValidationScripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

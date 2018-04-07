@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Net;
+using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using System.Text;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 using BitHub.Data;
 using BitHub.Services;
@@ -19,10 +19,11 @@ using LibGit2Sharp;
 
 namespace BitHub.Pages.Repositories
 {
-    public class FileModel : PageModel
+    public class EditModel : PageModel
     {
         private readonly ApplicationDbContext _appDbContext;
-        private readonly ILogger<IndexModel> _logger;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ILogger<EditModel> _logger;
         private readonly IFileManager _fileManager;
         private readonly IFileInfoManager _fileInfoManager;
         private Repository _repository;
@@ -33,14 +34,20 @@ namespace BitHub.Pages.Repositories
 
         public FileViewModel FileInfo { get; set; }
 
+        public RadioSelection[] Radios { get; set; }
 
-        public FileModel(
+        [BindProperty]
+        public EditInputModel Input { get; set; }
+
+        public EditModel(
             ApplicationDbContext appDbContext,
-            ILogger<IndexModel> logger,
+            UserManager<ApplicationUser> userManager,
+            ILogger<EditModel> logger,
             IFileManager fileManager,
             IFileInfoManager fileInfoManager)
         {
             _appDbContext = appDbContext;
+            _userManager = userManager;
             _logger = logger;
             _fileManager = fileManager;
             _fileInfoManager = fileInfoManager;
@@ -83,6 +90,39 @@ namespace BitHub.Pages.Repositories
             }
 
             GetFileVM(RepoInfo.RootPath, decodedRequestFile);
+
+            ConfigureRadioBtn();
+
+            return Page();
+        }
+
+
+        public async Task<IActionResult> OnPostAsync(
+            string owner, string reponame, string branch, string requestfile)
+        {
+            if (!ModelState.IsValid)
+                return Page();
+
+            // Retrieve the requested repo informantion from DB
+            RepoInfo = await _appDbContext.Repositories.FirstOrDefaultAsync(
+                repo => repo.Owner == owner && repo.RepoName == reponame);
+
+            if (RepoInfo == null || !InitializeRepositoryObj())
+            {
+                _logger.LogError($"\nFailed retrieving repository informantion for repository \"{owner}/{reponame}\"");
+                return NotFound();
+            }
+
+            // The "branch" and "RequestDir" parameters might contain '\' character which is percent encoded in URL,
+            // however they are not decoded in model binding, we have to manually decode them
+
+            string decodedRequestFile = WebUtility.UrlDecode(requestfile);
+
+            if (!await CommitChangesAsync(decodedRequestFile))
+            {
+                _logger.LogError($"\nFailed commiting changes to repository \"{owner}/{reponame}\"");
+                return NotFound();
+            }
 
             return Page();
         }
@@ -160,7 +200,51 @@ namespace BitHub.Pages.Repositories
             FileInfo.LineCount = lineCount;
             FileInfo.Size = _fileInfoManager.GetLength();
             FileInfo.LanguageShort = Path.GetExtension(relativeFilePath).Substring(1);
-            FileInfo.LatestCommt = GetLatestCommits(RepoInfo.RootPath, new string[] {relativeFilePath}, false).First();
+            //FileInfo.LatestCommt = GetLatestCommits(RepoInfo.RootPath, new string[] { relativeFilePath }, false).First();
+            return true;
+        }
+
+        private void ConfigureRadioBtn()
+        {
+            Radios = new RadioSelection[]
+            {
+                new RadioSelection{ Id = 0 },
+                new RadioSelection{ Id = 1 }
+            };
+        }
+
+        private async Task<bool> CommitChangesAsync(string relativeFilePath)
+        {
+            try
+            {
+                // create a new branch before commit if specified by user
+                if (Input.CreateNewBranch == 1)
+                {
+                    _repository.CreateBranch(Input.NewBranchName);
+                    CheckoutBranch(Input.NewBranchName);
+                }
+
+                string fullFilePath = Path.Combine(RepoInfo.RootPath, relativeFilePath);
+                _fileManager.WriteAllText(fullFilePath, Input.Content);
+
+                // Stage the file
+                _repository.Index.Add(relativeFilePath);
+
+                // retrives the info of current signed in user
+                var appUser = await _userManager.GetUserAsync(User);
+
+                // setting up commit signiture
+                Signature author = new Signature(appUser.UserName, appUser.Email, DateTime.Now);
+                Signature committer = author;
+
+                // Commit to the repository
+                Commit commit = _repository.Commit($"{Input.Title}\n{Input.Description}", author, committer);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception thrown: \"{ex.Message}\"");
+                return false;
+            }
             return true;
         }
 
@@ -186,88 +270,32 @@ namespace BitHub.Pages.Repositories
         }
 
 
-        private IEnumerable<Commit> GetLatestCommits(string repoRootPath, IEnumerable<string> targetRelativePaths, bool includeRename)
+        // should use number to match level instead of name, since
+        // different level of dirs can have the same name.
+        public string ReconstructPath(int lastLevel)
         {
-            List<Commit> commits = new List<Commit>();
-            try
+            string result = string.Empty;
+            int curLevel = 0;
+            foreach (string dir in RepoInfo_Additional.ParentDirectories)
             {
-                var shas = GetLatestCommitShas(repoRootPath, targetRelativePaths, includeRename);
-
-                foreach (string sha in shas)
-                    commits.Add((sha.Length == 0) ? null : _repository.Lookup<Commit>(sha));
-
-                return commits;
+                result = Path.Combine(result, dir);
+                if (curLevel++ == lastLevel)
+                    break;
             }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Failed retrieving latest commit from command line, error:\"{ex.Message}\"");
-            }
-            return null;
-        }
 
-        // helper method that gets the SHAs of the desired latest commit associated with all files and folders
-        // we provide it with all target paths to avoid the overhead of creating a new porocess
-        // for each path.
-        // use command line git and parse the output
-        // note the use of ReadLine or ReadToEnd might block indefinitely since we do not provide starting arguments
-        // and in this case the output stream does not have an end
+            // if true, the desired last level is the current level
+            if (curLevel == lastLevel)
+                result = Path.Combine(result, RepoInfo_Additional.CurrentPath);
 
-        // we will sure find the command that has been echoed back after executing it
-        // and on the next line, the git log result.
-        // if it is empty, no commit record for this path; otheriwse we get the commit SHA
-        // *** Note *** 
-        // although very unlikely, the description might also contain the same command
-        // which could lead to misinterpretation.
-
-
-        // in the directory entries, the latest commit includes rename history,
-        // which means we should use "--follow" option when rendering directory page;
-        // file page, however, does not go beyond rename.
-
-        private IEnumerable<string> GetLatestCommitShas(string repoRootPath, IEnumerable<string> targetRelativePaths, bool includeRename)
-        {
-            List<string> commitShas = new List<string>();
-
-            Process process = new Process();
-            ProcessStartInfo startInfo = new ProcessStartInfo
-            {
-                WindowStyle = ProcessWindowStyle.Hidden,
-                FileName = "cmd.exe",
-                RedirectStandardOutput = true,
-                RedirectStandardInput = true,
-                WorkingDirectory = repoRootPath
-            };
-
-            process.StartInfo = startInfo;
-            process.Start();
-            string renameSwitch = includeRename ? "--follow" : string.Empty;
-            foreach (string path in targetRelativePaths)
-            {
-                string command = $"git log -n 1 {renameSwitch} \"{path}\"\r\n";
-                process.StandardInput.Write(command);
-
-                while (true)
-                {
-                    string line = process.StandardOutput.ReadLine();
-                    if (line.IndexOf(command.Substring(0, command.Length - 2)) != -1)
-                    {
-                        string gitOutputLine = process.StandardOutput.ReadLine();
-                        int index1 = gitOutputLine.IndexOf(' ');
-                        if (index1 != -1)
-                            gitOutputLine = gitOutputLine.Substring(index1 + 1, gitOutputLine.Length - index1 - 1);
-                        commitShas.Add(gitOutputLine);
-                        break;
-                    }
-                }
-            }
-            process.Close();
-
-            return commitShas;
+            return result;
         }
 
 
-        // split the directory into individual levels
-        // returns the parent levels and the last level
+        // the requested repo directory path is separated by Windows style '\'
+        // which will be URL encoded
+        // might be helpful for routing to distinguish between the actuall route 
+        // requested dir or file path
+
         private Tuple<IEnumerable<string>, string> SplitDir(string dir)
         {
             string[] allLevels = dir.Split('\\');
@@ -275,39 +303,6 @@ namespace BitHub.Pages.Repositories
             string lastLevel = allLevels.Last();
             IEnumerable<string> parentLevels = allLevels.Take(allLevels.Length - 1);
             return new Tuple<IEnumerable<string>, string>(parentLevels, lastLevel);
-        }
-
-        // Helper method calculate the elapsed time for files and commits
-        // elapsed time expressed in days, hours, min
-        // TODO: reimplement to express elapsed time in month and years
-        public string GetTimeDifference(DateTimeOffset timeStamp)
-        {
-            TimeSpan elapsedTime = DateTimeOffset.UtcNow - timeStamp;
-            StringBuilder sb = new StringBuilder();
-
-            if (elapsedTime.Days != 0)
-                sb.Append(elapsedTime.Days).Append((elapsedTime.Days != 1) ? " days" : " day");
-            else if (elapsedTime.Hours != 0)
-                sb.Append(elapsedTime).Append((elapsedTime.Hours != 1) ? " hours" : " hour");
-            else if (elapsedTime.Minutes != 0)
-                sb.Append(elapsedTime.Minutes).Append(elapsedTime.Minutes != 1 ? " minutes" : " minute");
-            else
-                sb.Append(elapsedTime.Seconds).Append(elapsedTime.Seconds > 1 ? " seconds" : " second");
-
-            sb.Append(" ago");
-            return sb.ToString();
-        }
-
-        public string ReconstructPath(string lastLevel)
-        {
-            string result = string.Empty;
-            foreach (string dir in RepoInfo_Additional.ParentDirectories)
-            {
-                result = Path.Combine(result, dir);
-                if (dir == lastLevel)
-                    break;
-            }
-            return result;
         }
     }
 }

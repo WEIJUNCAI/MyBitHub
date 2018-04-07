@@ -25,9 +25,18 @@
                     <li class="nav-item"><a class="nav-link" asp-page="/About">About</a></li>
                     <li class="nav-item"><a class="nav-link" asp-page="/Contact">Contact</a></li>
                     <li class="nav-item"><a class="nav-link" asp-page="/Schedules/Index">Schedules</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-page="/Repositories/Index" asp-route-Owner="libgit2" asp-route-Reponame="libgit2sharp">Test Repo Home</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-page="/Repositories/Directory" asp-route-Owner="libgit2" asp-route-Reponame="libgit2sharp" asp-route-Branch="master" asp-route-RequestDir="LibGit2Sharp">Test Repo Dir</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-page="/Repositories/File" asp-route-Owner="libgit2" asp-route-Reponame="libgit2sharp" asp-route-Branch="master" asp-route-RequestFile="LibGit2Sharp/Blob.cs">Test Repo File</a></li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Test links
+                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" asp-page="/Repositories/Index" asp-route-Owner="libgit2" asp-route-Reponame="libgit2sharp">Test Repo Home</a>
+                            <a class="dropdown-item" asp-page="/Repositories/Directory" asp-route-Owner="libgit2" asp-route-Reponame="libgit2sharp" asp-route-Branch="master" asp-route-RequestDir="LibGit2Sharp">Test Repo Dir</a>
+                            <a class="dropdown-item" asp-page="/Repositories/File" asp-route-Owner="libgit2" asp-route-Reponame="libgit2sharp" asp-route-Branch="master" asp-route-RequestFile="LibGit2Sharp\Blob.cs">Test Repo File</a>
+                            <a class="dropdown-item" asp-page="/Repositories/Edit" asp-route-Owner="libgit2" asp-route-Reponame="libgit2sharp" asp-route-Branch="master" asp-route-RequestFile="LibGit2Sharp\Blob.cs">Test Repo File Edit</a>
+                        </div>
+                    </li>
 
                 </ul>
 
@@ -52,6 +61,17 @@
                 </li>
                 <li class="nav-item"><a class="nav-link" asp-page="About"></a></li>
                 <li class="nav-item"><a class="nav-link" asp-page="Contact"></a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Test links
+                    </a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" asp-page="/Repositories/Index" asp-route-Owner="libgit2" asp-route-Reponame="libgit2sharp">Test Repo Home</a>
+                        <a class="dropdown-item" asp-page="/Repositories/Directory" asp-route-Owner="libgit2" asp-route-Reponame="libgit2sharp" asp-route-Branch="master" asp-route-RequestDir="LibGit2Sharp">Test Repo Dir</a>
+                        <a class="dropdown-item" asp-page="/Repositories/File" asp-route-Owner="libgit2" asp-route-Reponame="libgit2sharp" asp-route-Branch="master" asp-route-RequestFile="LibGit2Sharp\Blob.cs">Test Repo File</a>
+                        <a class="dropdown-item" asp-page="/Repositories/Edit" asp-route-Owner="libgit2" asp-route-Reponame="libgit2sharp" asp-route-Branch="master" asp-route-RequestFile="LibGit2Sharp\Blob.cs">Test Repo File Edit</a>
+                    </div>
+                </li>
             </ul>
 
             <a class="mx-3" asp-page="/Accounts/Notifications">
