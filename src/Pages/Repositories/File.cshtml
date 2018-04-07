@@ -4,7 +4,7 @@
     ViewData["Title"] = "File";
 }
 
-@section HighlightScripts { 
+@section PageAdditionalHeader {
     @await Html.PartialAsync("_CodeHighlightScriptsPartial")
 }
 
@@ -144,7 +144,7 @@
                                        asp-route-Owner="@Model.RepoInfo.Owner"
                                        asp-route-Reponame="@Model.RepoInfo.RepoName"
                                        asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
-                                       asp-route-RequestDir="@Model.ReconstructPath(parentDir)">@parentDir</a>
+                                       asp-route-RequestFile="@Model.ReconstructPath(parentDir)">@parentDir</a>
                                 </li>
                             }
                             <li class="breadcrumb-item active">
@@ -189,7 +189,14 @@
                                                 <button type="button" class="btn btn-outline-dark">Blame</button>
                                                 <button type="button" class="btn btn-outline-dark">History</button>
                                             </div>
-                                            <a class="mx-2" href="#"><img src="~/images/octicons/pencil.svg"></a>
+                                            <a class="mx-2"
+                                               asp-page="./Edit"
+                                               asp-route-Owner="@Model.RepoInfo.Owner"
+                                               asp-route-Reponame="@Model.RepoInfo.RepoName"
+                                               asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
+                                               asp-route-RequestFile="@Model.FileInfo.FullPath">
+                                                <img src="~/images/octicons/pencil.svg">
+                                            </a>
                                             <a class="mx-2" href="#"><img src="~/images/octicons/trashcan.svg"></a>
 
 
@@ -200,7 +207,7 @@
                                     <div class="row">
                                         <div class="col">
                                             <pre class="mb-0">
-                                                <code class="@Model.FileInfo.Language code-block">@Model.FileInfo.Content
+                                            <code class="@Model.FileInfo.LanguageShort code-block">@Model.FileInfo.Content
                                                 </code>
                                             </pre>
                                         </div>

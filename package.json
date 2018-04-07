@@ -1,0 +1,15 @@
+{
+  "name": "npm_modules",
+  "version": "1.0.0",
+  "description": "npm managed client-side javascript packages for BitHub.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Weijun Cai",
+  "license": "ISC",
+  "dependencies": {
+    "ace-builds": "^1.3.3",
+    "diff2html": "^2.3.3"
+  }
+}

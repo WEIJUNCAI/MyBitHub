@@ -1,0 +1,34 @@
+﻿<environment include="Development">
+
+    <!-- diff2html -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.js"></script>
+    <script type="text/javascript" src="~/js/diff2html.js"></script>
+    <script type="text/javascript" src="~/js/diff2html-ui.js"></script>
+    <link rel="stylesheet" type="text/css" href="~/css/diff2html.css">
+
+
+    <!-- jsdiff -->
+    <script type="text/javascript" src="~/js/diff.js"></script>
+    <script src="~/js/repoEditPage.js"></script>
+
+    <!-- ace -->
+    <script src="~/js/ace.js" type="text/javascript" charset="utf-8"></script>
+
+</environment>
+
+<environment exclude="Development">
+
+    <!-- diff2html -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.js"></script>
+    <script type="text/javascript" src="./node_modules/diff2html/dist/diff2html.js"></script>
+    <script type="text/javascript" src="./node_modules/diff2html/dist/diff2html-ui.js"></script>
+    <link rel="stylesheet" type="text/css" href="./node_modules/diff2html/dist/diff2html.css">
+
+
+    <!-- jsdiff -->
+    <script type="text/javascript" src="./node_modules/diff/dist/diff.js"></script>
+    <script src="~/js/repoEditPage.js"></script>
+
+    <!-- ace -->
+    <script src="~/js/ace.js" type="text/javascript" charset="utf-8"></script>
+</environment>
