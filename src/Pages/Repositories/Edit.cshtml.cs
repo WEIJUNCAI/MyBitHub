@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 using BitHub.Data;
 using BitHub.Services;
@@ -19,9 +20,13 @@ using LibGit2Sharp;
 
 namespace BitHub.Pages.Repositories
 {
+
+    [Authorize(policy: "SignedIn")]
+    [Authorize(policy: "RepoOwner")]
     public class EditModel : PageModel
     {
         private readonly ApplicationDbContext _appDbContext;
+        private readonly IAuthorizationService _authorizationService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<EditModel> _logger;
         private readonly IFileManager _fileManager;
@@ -41,21 +46,24 @@ namespace BitHub.Pages.Repositories
 
         public EditModel(
             ApplicationDbContext appDbContext,
+            IAuthorizationService authorizationService,
             UserManager<ApplicationUser> userManager,
             ILogger<EditModel> logger,
             IFileManager fileManager,
             IFileInfoManager fileInfoManager)
         {
             _appDbContext = appDbContext;
+            _authorizationService = authorizationService;
             _userManager = userManager;
             _logger = logger;
             _fileManager = fileManager;
             _fileInfoManager = fileInfoManager;
 
             // initialize the supplementary repo view model
-            RepoInfo_Additional = new RepositoryViewModel();
-            FileInfo = new FileViewModel();
+            //RepoInfo_Additional = new RepositoryViewModel();
+            //FileInfo = new FileViewModel();
         }
+
 
         public async Task<IActionResult> OnGetAsync(
             string owner, string reponame, string branch, string requestfile)
@@ -96,9 +104,7 @@ namespace BitHub.Pages.Repositories
             return Page();
         }
 
-
-        public async Task<IActionResult> OnPostAsync(
-            string owner, string reponame, string branch, string requestfile)
+        public async Task<IActionResult> OnPostAsync(string owner, string reponame, string branch, string requestfile)
         {
             if (!ModelState.IsValid)
                 return Page();
@@ -124,7 +130,7 @@ namespace BitHub.Pages.Repositories
                 return NotFound();
             }
 
-            return Page();
+            return RedirectToPage("./File", this.RouteData);
         }
 
 
@@ -162,13 +168,16 @@ namespace BitHub.Pages.Repositories
             try
             {
                 var splitedDirs = SplitDir(requestDir);
-
-                RepoInfo_Additional.CurrentBranch = _repository.Head;
-                RepoInfo_Additional.BranchCount = _repository.GetBranchCount();
-                RepoInfo_Additional.CommitCountInBranch = _repository.Head.GetBranchCommitCount();
-                RepoInfo_Additional.CurrentPath = splitedDirs.Item2;
-                RepoInfo_Additional.ParentDirectories = splitedDirs.Item1;
-                RepoInfo_Additional.Branches = _repository.Branches.Select(branch => branch.FriendlyName).ToArray();
+                RepoInfo_Additional = new RepositoryViewModel(
+                currentBranch: _repository.Head,
+                branchCount: _repository.GetBranchCount(),
+                releaseCount: 0,
+                commitCountInBranch: _repository.Head.GetBranchCommitCount(),
+                currentPath: splitedDirs.Item2,
+                parentDirectories: splitedDirs.Item1,
+                branches: _repository.Branches.Select(branch => branch.FriendlyName).ToArray(),
+                tableEntries: null           
+                );
             }
             catch (Exception ex)
             {
@@ -190,17 +199,20 @@ namespace BitHub.Pages.Repositories
                 while ((line = reader.ReadLine()) != null)
                 {
                     ++lineCount;
-                    sb.AppendLine(/*WebUtility.HtmlEncode*/(line));
+                    sb.AppendLine(line);
                 }
             }
 
             _fileInfoManager.SetFilePath(fullFilePath);
-            FileInfo.FullPath = relativeFilePath;
-            FileInfo.Content = sb.ToString();
-            FileInfo.LineCount = lineCount;
-            FileInfo.Size = _fileInfoManager.GetLength();
-            FileInfo.LanguageShort = Path.GetExtension(relativeFilePath).Substring(1);
-            //FileInfo.LatestCommt = GetLatestCommits(RepoInfo.RootPath, new string[] { relativeFilePath }, false).First();
+            FileInfo = new FileViewModel(
+                fullPath: relativeFilePath,
+                content: sb.ToString(),
+                lineCount: lineCount,
+                size: _fileInfoManager.GetLength(),
+                languageShort: Path.GetExtension(relativeFilePath).Substring(1),
+                languageFull: null,
+                latestCommt: null
+            );
             return true;
         }
 

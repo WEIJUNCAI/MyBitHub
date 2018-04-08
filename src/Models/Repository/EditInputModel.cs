@@ -24,6 +24,14 @@ namespace BitHub.Models.Repository
         public int CreateNewBranch { get; set; }
     }
 
+    // The view model for radio buttons.
+    // in ASP.NET core, a set of radio buttons are each assigned 
+    // a radio button VM object that binds to "value" attribute.
+
+    // And all of their "asp-for" tag helper field is populated by the same
+    // form input VM model property which will be initialized using the VM object
+    // of the checked radio button.
+
     public class RadioSelection
     {
         public int Id { get; set; }

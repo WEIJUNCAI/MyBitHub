@@ -46,7 +46,7 @@ namespace BitHub.Pages.Repositories
             _logger = logger;
             _directoryManager = directoryManager;
             // initialize the supplementary repo view model
-            RepoInfo_Additional = new RepositoryViewModel();
+            //RepoInfo_Additional = new RepositoryViewModel();
         }
 
 
@@ -76,12 +76,6 @@ namespace BitHub.Pages.Repositories
                 return NotFound();
             }
 
-            if (!GetAdditionalRepoVM(decodedRequestDir))
-            {
-                _logger.LogError($"\nFailed retrieving additional repository informantion for repository \"{owner}/{reponame}\"");
-                return NotFound();
-            }
-
             IEnumerable<string> dirs, files;
             if (!GetRelativeDirsAndFiles(reqestDirFullPath, out dirs, out files))
             {
@@ -89,7 +83,11 @@ namespace BitHub.Pages.Repositories
                 return NotFound();
             }
 
-            RepoInfo_Additional.TableEntries = GetTableEntries(dirs, files);
+            if (!GetAdditionalRepoVM(decodedRequestDir, dirs, files))
+            {
+                _logger.LogError($"\nFailed retrieving additional repository informantion for repository \"{owner}/{reponame}\"");
+                return NotFound();
+            }
 
             return Page();
         }
@@ -123,18 +121,23 @@ namespace BitHub.Pages.Repositories
         }
 
         // fill in the additional repository view model using repository info
-        private bool GetAdditionalRepoVM(string requestDir)
+        private bool GetAdditionalRepoVM(
+            string requestDir, IEnumerable<string> dirs, IEnumerable<string> files)
         {
             try
             {
                 var splitedDirs = SplitDir(requestDir);
 
-                RepoInfo_Additional.CurrentBranch = _repository.Head;
-                RepoInfo_Additional.BranchCount = _repository.GetBranchCount();
-                RepoInfo_Additional.CommitCountInBranch = _repository.Head.GetBranchCommitCount();
-                RepoInfo_Additional.CurrentPath = splitedDirs.Item2;
-                RepoInfo_Additional.ParentDirectories = splitedDirs.Item1;
-                RepoInfo_Additional.Branches = _repository.Branches.Select(branch => branch.FriendlyName).ToArray();
+                RepoInfo_Additional = new RepositoryViewModel(
+                currentBranch: _repository.Head,
+                branchCount: _repository.GetBranchCount(),
+                releaseCount: 0,
+                commitCountInBranch: _repository.Head.GetBranchCommitCount(),
+                currentPath: splitedDirs.Item2,
+                parentDirectories: splitedDirs.Item1,
+                branches: _repository.Branches.Select(branch => branch.FriendlyName).ToArray(),
+                tableEntries: GetTableEntries(dirs, files)
+                );
             }
             catch (Exception ex)
             {
@@ -191,25 +194,23 @@ namespace BitHub.Pages.Repositories
             foreach (string dir in dirs)
             {
                 tableEntries.Add(new RepoListEntryViewModel
-                {
-                    EntryType = EntryType.Directory,
-                    RelativePath = dir,
-                    FriendlyName = Path.GetFileName(dir),
-                    LatestCommit = commits.Current
-                }
-                );
+                (
+                    entryType: EntryType.Directory,
+                    relativePath: dir,
+                    friendlyName: Path.GetFileName(dir),
+                    latestCommit: commits.Current
+                ));
                 commits.MoveNext();
             }
             foreach (string file in files)
             {
                 tableEntries.Add(new RepoListEntryViewModel
-                {
-                    EntryType = EntryType.File,
-                    RelativePath = file,
-                    FriendlyName = Path.GetFileName(file),
-                    LatestCommit = commits.Current
-                }
-                );
+                (
+                    entryType: EntryType.File,
+                    relativePath: file,
+                    friendlyName: Path.GetFileName(file),
+                    latestCommit: commits.Current
+                ));
                 commits.MoveNext();
             }
 

@@ -46,8 +46,8 @@ namespace BitHub.Pages.Repositories
             _fileInfoManager = fileInfoManager;
 
             // initialize the supplementary repo view model
-            RepoInfo_Additional = new RepositoryViewModel();
-            FileInfo = new FileViewModel();
+            //RepoInfo_Additional = new RepositoryViewModel();
+            //FileInfo = new FileViewModel();
         }
 
         public async Task<IActionResult> OnGetAsync(
@@ -123,12 +123,16 @@ namespace BitHub.Pages.Repositories
             {
                 var splitedDirs = SplitDir(requestDir);
 
-                RepoInfo_Additional.CurrentBranch = _repository.Head;
-                RepoInfo_Additional.BranchCount = _repository.GetBranchCount();
-                RepoInfo_Additional.CommitCountInBranch = _repository.Head.GetBranchCommitCount();
-                RepoInfo_Additional.CurrentPath = splitedDirs.Item2;
-                RepoInfo_Additional.ParentDirectories = splitedDirs.Item1;
-                RepoInfo_Additional.Branches = _repository.Branches.Select(branch => branch.FriendlyName).ToArray();
+                RepoInfo_Additional = new RepositoryViewModel(
+                currentBranch: _repository.Head,
+                branchCount: _repository.GetBranchCount(),
+                releaseCount: 0,
+                commitCountInBranch: _repository.Head.GetBranchCommitCount(),
+                currentPath: splitedDirs.Item2,
+                parentDirectories: splitedDirs.Item1,
+                branches: _repository.Branches.Select(branch => branch.FriendlyName).ToArray(),
+                tableEntries: null
+                );
             }
             catch (Exception ex)
             {
@@ -155,12 +159,15 @@ namespace BitHub.Pages.Repositories
             }
 
             _fileInfoManager.SetFilePath(fullFilePath);
-            FileInfo.FullPath = relativeFilePath;
-            FileInfo.Content = sb.ToString();
-            FileInfo.LineCount = lineCount;
-            FileInfo.Size = _fileInfoManager.GetLength();
-            FileInfo.LanguageShort = Path.GetExtension(relativeFilePath).Substring(1);
-            FileInfo.LatestCommt = GetLatestCommits(RepoInfo.RootPath, new string[] {relativeFilePath}, false).First();
+            FileInfo = new FileViewModel(
+                fullPath: relativeFilePath,
+                content: sb.ToString(),
+                lineCount: lineCount,
+                size: _fileInfoManager.GetLength(),
+                languageShort: Path.GetExtension(relativeFilePath).Substring(1),
+                languageFull: null,
+                latestCommt: GetLatestCommits(RepoInfo.RootPath, new string[] {relativeFilePath}, false).First()
+            );
             return true;
         }
 
