@@ -129,14 +129,14 @@ namespace BitHub.Pages.Repositories
                 var splitedDirs = SplitDir(requestDir);
 
                 RepoInfo_Additional = new RepositoryViewModel(
-                currentBranch: _repository.Head,
-                branchCount: _repository.GetBranchCount(),
-                releaseCount: 0,
-                commitCountInBranch: _repository.Head.GetBranchCommitCount(),
-                currentPath: splitedDirs.Item2,
-                parentDirectories: splitedDirs.Item1,
-                branches: _repository.Branches.Select(branch => branch.FriendlyName).ToArray(),
-                tableEntries: GetTableEntries(dirs, files)
+                    currentBranch: _repository.Head,
+                    branchCount: _repository.GetBranchCount(),
+                    releaseCount: 0,
+                    commitCountInBranch: _repository.Head.GetBranchCommitCount(),
+                    currentPath: splitedDirs.Item2,
+                    parentDirectories: splitedDirs.Item1,
+                    branches: _repository.Branches.Select(branch => branch.FriendlyName).ToArray(),
+                    tableEntries: GetTableEntries(dirs, files)
                 );
             }
             catch (Exception ex)

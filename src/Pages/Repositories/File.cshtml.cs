@@ -44,10 +44,6 @@ namespace BitHub.Pages.Repositories
             _logger = logger;
             _fileManager = fileManager;
             _fileInfoManager = fileInfoManager;
-
-            // initialize the supplementary repo view model
-            //RepoInfo_Additional = new RepositoryViewModel();
-            //FileInfo = new FileViewModel();
         }
 
         public async Task<IActionResult> OnGetAsync(
@@ -124,14 +120,14 @@ namespace BitHub.Pages.Repositories
                 var splitedDirs = SplitDir(requestDir);
 
                 RepoInfo_Additional = new RepositoryViewModel(
-                currentBranch: _repository.Head,
-                branchCount: _repository.GetBranchCount(),
-                releaseCount: 0,
-                commitCountInBranch: _repository.Head.GetBranchCommitCount(),
-                currentPath: splitedDirs.Item2,
-                parentDirectories: splitedDirs.Item1,
-                branches: _repository.Branches.Select(branch => branch.FriendlyName).ToArray(),
-                tableEntries: null
+                    currentBranch: _repository.Head,
+                    branchCount: _repository.GetBranchCount(),
+                    releaseCount: 0,
+                    commitCountInBranch: _repository.Head.GetBranchCommitCount(),
+                    currentPath: splitedDirs.Item2,
+                    parentDirectories: splitedDirs.Item1,
+                    branches: _repository.Branches.Select(branch => branch.FriendlyName).ToArray(),
+                    tableEntries: null
                 );
             }
             catch (Exception ex)
