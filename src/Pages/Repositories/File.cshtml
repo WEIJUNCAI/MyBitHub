@@ -1,5 +1,6 @@
 ﻿@page "{Owner}/{Reponame}/{Branch}/{RequestFile}"
 @model BitHub.Pages.Repositories.FileModel
+@using BitHub.Helpers.Repository
 @{
     ViewData["Title"] = "File";
 }
@@ -9,93 +10,8 @@
 }
 
 <div class="container-fluid body-content">
-    <div class="row px-5 bg-light">
 
-        <div class="col-md-6 mt-3">
-            <ul class="list-inline mb-0">
-                <li class="list-inline-item mx-1">
-                    <img src="~/images/octicons/repo.svg">
-                </li>
-                <li class="list-inline-item">
-                    <ol class="breadcrumb my-0 bg-light">
-                        <li class="breadcrumb-item">
-                            <a href="#">@Model.RepoInfo.Owner</a>
-                        </li>
-                        <li class="breadcrumb-item">
-                            <strong><a asp-page="./Index" asp-route-Owner="@Model.RepoInfo.Owner" asp-route-Reponame="@Model.RepoInfo.RepoName" class="active">@Model.RepoInfo.RepoName</a></strong>
-                        </li>
-                    </ol>
-                </li>
-            </ul>
-        </div>
-
-        <div class="col-md-6 mt-4">
-            <div class="row justify-content-center">
-                <div class="col-md-4 px-0">
-                    <div class="input-group input-group-sm">
-                        <div class="input-group-prepend">
-                            <button type="button" class="btn btn-outline-dark">
-                                <img src="~/images/octicons/eye.svg"> Watch
-                            </button>
-                            <div class="input-group-text bg-white rounded-right" id="btnGroupAddon">@Model.RepoInfo.WatchCount</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4 px-0">
-                    <div class="input-group input-group-sm">
-                        <div class="input-group-prepend">
-                            <button type="button" class="btn btn-outline-dark">
-                                <img src="~/images/octicons/star.svg"> Star
-                            </button>
-                            <div class="input-group-text bg-white rounded-right" id="btnGroupAddon">@Model.RepoInfo.StarCount</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4 px-0">
-                    <div class="input-group input-group-sm">
-
-                        <div class="input-group-prepend">
-                            <button type="button" class="btn btn-outline-dark">
-                                <img src="~/images/octicons/repo-forked.svg"> Fork
-                            </button>
-                            <div class="input-group-text bg-white rounded-right" id="btnGroupAddon">@Model.RepoInfo.ForkCount</div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-
-    <div class="row px-0 pt-2 bg-light">
-        <div class="col-md-12 mx-0 px-0">
-            <nav>
-                <ul class="nav nav-tabs px-4">
-                    <li class="nav-item">
-                        <a class="nav-item nav-link ml-5 text-dark active" id="nav-home-tab" data-toggle="tab" href="#nav-code">
-                            <img src="~/images/octicons/code.svg"> Code
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-item nav-link text-dark" id="nav-profile-tab" data-toggle="tab" href="#nav-issues">
-                            <img src="~/images/octicons/issue-opened.svg"> Issues
-                            <span class="badge badge-light">153</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-item nav-link text-dark" id="nav-contact-tab" data-toggle="tab" href="#nav-pr">
-                            <img src="~/images/octicons/git-pull-request.svg"> Pull requests
-                            <span class="badge badge-light">35</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-
-    </div>
+    @await Html.PartialAsync("_RepositoryHeaderPartial", Model.RepoInfo)
 
     <div class="tab-content mt-4 " id="nav-tabContent">
         <div class="tab-pane fade show active" id="nav-code">
@@ -113,7 +29,7 @@
                                         <span class="font-weight-bold branch-name-span align-bottom">master</span>
                                     </button>
                                     <div class="dropdown-menu dropdown-branch-list">
-                                        @foreach (var branch in Model.RepoInfo_Additional.Branches)
+                                        @foreach (var branch in Model.BranchVM.Branches)
                                         {
                                             <a class="dropdown-item" href="#">@branch</a>
                                             <div class="dropdown-divider"></div>
@@ -137,18 +53,19 @@
                             <li class="breadcrumb-item">
                                 <strong><a asp-page="./Index" asp-route-Owner="@Model.RepoInfo.Owner" asp-route-Reponame="@Model.RepoInfo.RepoName" class="active">@Model.RepoInfo.RepoName</a></strong>
                             </li>
-                            @foreach (var parentDir in Model.RepoInfo_Additional.ParentDirectories)
+                            @{ int curLevel = 0;}
+                            @foreach (var parentDir in Model.PathVM.ParentDirectories)
                             {
                                 <li class="breadcrumb-item">
                                     <a asp-page="./Directory"
                                        asp-route-Owner="@Model.RepoInfo.Owner"
                                        asp-route-Reponame="@Model.RepoInfo.RepoName"
-                                       asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
-                                       asp-route-RequestFile="@Model.ReconstructPath(parentDir)">@parentDir</a>
+                                       asp-route-Branch="@Model.BranchVM.CurrentBranch.FriendlyName"
+                                       asp-route-RequestFile="@DirectoryHelper.ReconstructPath(curLevel, Model.PathVM.ParentDirectories, Model.PathVM.CurrentPath)">@parentDir</a>
                                 </li>
                             }
                             <li class="breadcrumb-item active">
-                                @Model.RepoInfo_Additional.CurrentPath
+                                @Model.PathVM.CurrentPath
                             </li>
                         </ol>
                     </div>
@@ -161,9 +78,9 @@
                                 <div class="col text-right">
                                     Latest commit
                                     <a href="#" class="text-dark">
-                                        <code>@Model.FileInfo.LatestCommt.Sha.Substring(0, 7)</code>
+                                        <code>@Model.FileVM.LatestCommt.Sha.Substring(0, 7)</code>
                                     </a>
-                                    <span> @Model.GetTimeDifference(Model.FileInfo.LatestCommt.Committer.When)</span>
+                                    <span> @DateTimeHelper.GetTimeDifference(Model.FileVM.LatestCommt.Committer.When)</span>
                                 </div>
                             </div>
                         </div>
@@ -178,9 +95,9 @@
                                 <li class="list-group-item py-2 file-header bg-light">
                                     <div class="row">
                                         <div class="col">
-                                            <code class="text-dark">@Model.FileInfo.LineCount lines</code>
+                                            <code class="text-dark">@Model.FileVM.LineCount lines</code>
                                             <span class="file-info-divider"></span>
-                                            <code class="text-dark">@Model.FileInfo.Size B</code>
+                                            <code class="text-dark">@Model.FileVM.Size B</code>
                                         </div>
 
                                         <div class="col text-muted text-right">
@@ -193,8 +110,8 @@
                                                asp-page="./Edit"
                                                asp-route-Owner="@Model.RepoInfo.Owner"
                                                asp-route-Reponame="@Model.RepoInfo.RepoName"
-                                               asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
-                                               asp-route-RequestFile="@Model.FileInfo.FullPath">
+                                               asp-route-Branch="@Model.BranchVM.CurrentBranch.FriendlyName"
+                                               asp-route-RequestFile="@Model.FileVM.FullPath">
                                                 <img src="~/images/octicons/pencil.svg">
                                             </a>
                                             <a class="mx-2" href="#"><img src="~/images/octicons/trashcan.svg"></a>
@@ -207,7 +124,7 @@
                                     <div class="row">
                                         <div class="col">
                                             <pre class="mb-0">
-                                            <code class="@Model.FileInfo.LanguageShort code-block">@Model.FileInfo.Content
+                                            <code class="@Model.FileVM.LanguageShort code-block">@Model.FileVM.Content
                                                 </code>
                                             </pre>
                                         </div>

@@ -14,7 +14,6 @@
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.2" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Helpers\Repository\" />
     <Folder Include="wwwroot\images\Avatar\" />
   </ItemGroup>
 </Project>

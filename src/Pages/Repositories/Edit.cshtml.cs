@@ -16,6 +16,7 @@ using BitHub.Data;
 using BitHub.Services;
 using BitHub.Models.Repository;
 using BitHub.Extensions;
+using BitHub.Helpers.Repository;
 using LibGit2Sharp;
 
 namespace BitHub.Pages.Repositories
@@ -23,7 +24,7 @@ namespace BitHub.Pages.Repositories
 
     [Authorize(policy: "SignedIn")]
     [Authorize(policy: "RepoOwner")]
-    public class EditModel : PageModel
+    public class EditModel : PageModelBase
     {
         private readonly ApplicationDbContext _appDbContext;
         private readonly IAuthorizationService _authorizationService;
@@ -31,13 +32,7 @@ namespace BitHub.Pages.Repositories
         private readonly ILogger<EditModel> _logger;
         private readonly IFileManager _fileManager;
         private readonly IFileInfoManager _fileInfoManager;
-        private Repository _repository;
 
-        public RepositoryInfoModel RepoInfo { get; set; }
-
-        public RepositoryViewModel RepoInfo_Additional { get; set; }
-
-        public FileViewModel FileInfo { get; set; }
 
         public RadioSelection[] Radios { get; set; }
 
@@ -58,10 +53,6 @@ namespace BitHub.Pages.Repositories
             _logger = logger;
             _fileManager = fileManager;
             _fileInfoManager = fileInfoManager;
-
-            // initialize the supplementary repo view model
-            //RepoInfo_Additional = new RepositoryViewModel();
-            //FileInfo = new FileViewModel();
         }
 
 
@@ -72,7 +63,7 @@ namespace BitHub.Pages.Repositories
             RepoInfo = await _appDbContext.Repositories.FirstOrDefaultAsync(
                 repo => repo.Owner == owner && repo.RepoName == reponame);
 
-            if (RepoInfo == null || !InitializeRepositoryObj())
+            if (RepoInfo == null)
             {
                 _logger.LogError($"\nFailed retrieving repository informantion for repository \"{owner}/{reponame}\"");
                 return NotFound();
@@ -85,19 +76,28 @@ namespace BitHub.Pages.Repositories
             string decodedRequestFile = WebUtility.UrlDecode(requestfile);
             string reqestFileFullPath = Path.Combine(RepoInfo.RootPath, decodedRequestFile);
 
-            if (_repository.Head.FriendlyName != decodedBranch && !CheckoutBranch(decodedBranch))
+            try
             {
-                _logger.LogError($"\nFailed checking out branch {decodedBranch}.");
+                InitializeRepositoryObj(RepoInfo.RootPath);
+
+                if (_repository.Head.FriendlyName != decodedBranch)
+                    _repository.CheckoutBranch(decodedBranch);
+
+                _fileInfoManager.SetFilePath(reqestFileFullPath);
+                var fileRes = _fileManager.GetFileAllTextAndLineCount(reqestFileFullPath);
+                _fileInfoManager.SetFilePath(reqestFileFullPath);
+                long size = _fileInfoManager.GetLength();
+
+                InitHeaderSpecVM();
+                InitPathVM(decodedRequestFile);
+                InitBranchVM();
+                InitFileVM(RepoInfo.RootPath, decodedRequestFile, fileRes.Item2, size, fileRes.Item1);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Fatal error occured trying to retrieve info for repository \"{owner}/{reponame}\", exception:\n{ex.Message}");
                 return NotFound();
             }
-
-            if (!GetAdditionalRepoVM(decodedRequestFile))
-            {
-                _logger.LogError($"\nFailed retrieving additional repository informantion for repository \"{owner}/{reponame}\"");
-                return NotFound();
-            }
-
-            GetFileVM(RepoInfo.RootPath, decodedRequestFile);
 
             ConfigureRadioBtn();
 
@@ -113,7 +113,7 @@ namespace BitHub.Pages.Repositories
             RepoInfo = await _appDbContext.Repositories.FirstOrDefaultAsync(
                 repo => repo.Owner == owner && repo.RepoName == reponame);
 
-            if (RepoInfo == null || !InitializeRepositoryObj())
+            if (RepoInfo == null)
             {
                 _logger.LogError($"\nFailed retrieving repository informantion for repository \"{owner}/{reponame}\"");
                 return NotFound();
@@ -123,6 +123,8 @@ namespace BitHub.Pages.Repositories
             // however they are not decoded in model binding, we have to manually decode them
 
             string decodedRequestFile = WebUtility.UrlDecode(requestfile);
+
+            InitializeRepositoryObj(RepoInfo.RootPath);
 
             if (!await CommitChangesAsync(decodedRequestFile))
             {
@@ -142,79 +144,6 @@ namespace BitHub.Pages.Repositories
         /////////////////////////////////////////////////////////////////////
 
 
-        // initialize the libgit2sharp repository object for later git opeartions
-        private bool InitializeRepositoryObj()
-        {
-            try
-            {
-                _repository = new Repository(RepoInfo.RootPath);
-
-                // register for disposal for the repository object after fulfilling the request
-                // it seems we must call register AFTER the object has been initialized.
-                HttpContext.Response.RegisterForDispose(_repository);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"\nFailed initializing repository object on path\"{RepoInfo.RootPath}\", error message: {ex.Message}");
-                return false;
-            }
-
-            return true;
-        }
-
-        // fill in the additional repository view model using repository info
-        private bool GetAdditionalRepoVM(string requestDir)
-        {
-            try
-            {
-                var splitedDirs = SplitDir(requestDir);
-                RepoInfo_Additional = new RepositoryViewModel(
-                currentBranch: _repository.Head,
-                branchCount: _repository.GetBranchCount(),
-                releaseCount: 0,
-                commitCountInBranch: _repository.Head.GetBranchCommitCount(),
-                currentPath: splitedDirs.Item2,
-                parentDirectories: splitedDirs.Item1,
-                branches: _repository.Branches.Select(branch => branch.FriendlyName).ToArray(),
-                tableEntries: null           
-                );
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"\nFailed retrieving git repository info, error message: {ex.Message}");
-                return false;
-            }
-
-            return true;
-        }
-
-        private bool GetFileVM(string repoRootPath, string relativeFilePath)
-        {
-            string fullFilePath = Path.Combine(repoRootPath, relativeFilePath);
-            StringBuilder sb = new StringBuilder();
-            uint lineCount = 0;
-            using (StreamReader reader = new StreamReader(_fileManager.Open(fullFilePath, FileMode.Open), Encoding.UTF8))
-            {
-                string line;
-                while ((line = reader.ReadLine()) != null)
-                {
-                    ++lineCount;
-                    sb.AppendLine(line);
-                }
-            }
-
-            _fileInfoManager.SetFilePath(fullFilePath);
-            FileInfo = new FileViewModel(
-                fullPath: relativeFilePath,
-                content: sb.ToString(),
-                lineCount: lineCount,
-                size: _fileInfoManager.GetLength(),
-                languageShort: Path.GetExtension(relativeFilePath).Substring(1),
-                languageFull: null,
-                latestCommt: null
-            );
-            return true;
-        }
 
         private void ConfigureRadioBtn()
         {
@@ -233,7 +162,7 @@ namespace BitHub.Pages.Repositories
                 if (Input.CreateNewBranch == 1)
                 {
                     _repository.CreateBranch(Input.NewBranchName);
-                    CheckoutBranch(Input.NewBranchName);
+                    _repository.CheckoutBranch(Input.NewBranchName);
                 }
 
                 string fullFilePath = Path.Combine(RepoInfo.RootPath, relativeFilePath);
@@ -261,60 +190,6 @@ namespace BitHub.Pages.Repositories
         }
 
 
-        private bool CheckoutBranch(string branch)
-        {
-            try
-            {
-                Branch targetBranch = _repository.Branches[branch];
-                if (targetBranch == null)
-                {
-                    _logger.LogError($"The branch \"{targetBranch}\" does not exist.");
-                    return false;
-                }
-                Commands.Checkout(_repository, targetBranch);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Exception thrown: \"{ex.Message}\"");
-            }
-            return false;
-        }
 
-
-        // should use number to match level instead of name, since
-        // different level of dirs can have the same name.
-        public string ReconstructPath(int lastLevel)
-        {
-            string result = string.Empty;
-            int curLevel = 0;
-            foreach (string dir in RepoInfo_Additional.ParentDirectories)
-            {
-                result = Path.Combine(result, dir);
-                if (curLevel++ == lastLevel)
-                    break;
-            }
-
-            // if true, the desired last level is the current level
-            if (curLevel == lastLevel)
-                result = Path.Combine(result, RepoInfo_Additional.CurrentPath);
-
-            return result;
-        }
-
-
-        // the requested repo directory path is separated by Windows style '\'
-        // which will be URL encoded
-        // might be helpful for routing to distinguish between the actuall route 
-        // requested dir or file path
-
-        private Tuple<IEnumerable<string>, string> SplitDir(string dir)
-        {
-            string[] allLevels = dir.Split('\\');
-
-            string lastLevel = allLevels.Last();
-            IEnumerable<string> parentLevels = allLevels.Take(allLevels.Length - 1);
-            return new Tuple<IEnumerable<string>, string>(parentLevels, lastLevel);
-        }
     }
 }
