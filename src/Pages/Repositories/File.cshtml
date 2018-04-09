@@ -1,5 +1,6 @@
 ﻿@page "{Owner}/{Reponame}/{Branch}/{RequestFile}"
 @model BitHub.Pages.Repositories.FileModel
+@using BitHub.Helpers.Repository
 @{
     ViewData["Title"] = "File";
 }
@@ -28,7 +29,7 @@
                                         <span class="font-weight-bold branch-name-span align-bottom">master</span>
                                     </button>
                                     <div class="dropdown-menu dropdown-branch-list">
-                                        @foreach (var branch in Model.RepoInfo_Additional.Branches)
+                                        @foreach (var branch in Model.BranchVM.Branches)
                                         {
                                             <a class="dropdown-item" href="#">@branch</a>
                                             <div class="dropdown-divider"></div>
@@ -52,18 +53,19 @@
                             <li class="breadcrumb-item">
                                 <strong><a asp-page="./Index" asp-route-Owner="@Model.RepoInfo.Owner" asp-route-Reponame="@Model.RepoInfo.RepoName" class="active">@Model.RepoInfo.RepoName</a></strong>
                             </li>
-                            @foreach (var parentDir in Model.RepoInfo_Additional.ParentDirectories)
+                            @{ int curLevel = 0;}
+                            @foreach (var parentDir in Model.PathVM.ParentDirectories)
                             {
                                 <li class="breadcrumb-item">
                                     <a asp-page="./Directory"
                                        asp-route-Owner="@Model.RepoInfo.Owner"
                                        asp-route-Reponame="@Model.RepoInfo.RepoName"
-                                       asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
-                                       asp-route-RequestFile="@Model.ReconstructPath(parentDir)">@parentDir</a>
+                                       asp-route-Branch="@Model.BranchVM.CurrentBranch.FriendlyName"
+                                       asp-route-RequestFile="@DirectoryHelper.ReconstructPath(curLevel, Model.PathVM.ParentDirectories, Model.PathVM.CurrentPath)">@parentDir</a>
                                 </li>
                             }
                             <li class="breadcrumb-item active">
-                                @Model.RepoInfo_Additional.CurrentPath
+                                @Model.PathVM.CurrentPath
                             </li>
                         </ol>
                     </div>
@@ -76,9 +78,9 @@
                                 <div class="col text-right">
                                     Latest commit
                                     <a href="#" class="text-dark">
-                                        <code>@Model.FileInfo.LatestCommt.Sha.Substring(0, 7)</code>
+                                        <code>@Model.FileVM.LatestCommt.Sha.Substring(0, 7)</code>
                                     </a>
-                                    <span> @Model.GetTimeDifference(Model.FileInfo.LatestCommt.Committer.When)</span>
+                                    <span> @DateTimeHelper.GetTimeDifference(Model.FileVM.LatestCommt.Committer.When)</span>
                                 </div>
                             </div>
                         </div>
@@ -93,9 +95,9 @@
                                 <li class="list-group-item py-2 file-header bg-light">
                                     <div class="row">
                                         <div class="col">
-                                            <code class="text-dark">@Model.FileInfo.LineCount lines</code>
+                                            <code class="text-dark">@Model.FileVM.LineCount lines</code>
                                             <span class="file-info-divider"></span>
-                                            <code class="text-dark">@Model.FileInfo.Size B</code>
+                                            <code class="text-dark">@Model.FileVM.Size B</code>
                                         </div>
 
                                         <div class="col text-muted text-right">
@@ -108,8 +110,8 @@
                                                asp-page="./Edit"
                                                asp-route-Owner="@Model.RepoInfo.Owner"
                                                asp-route-Reponame="@Model.RepoInfo.RepoName"
-                                               asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
-                                               asp-route-RequestFile="@Model.FileInfo.FullPath">
+                                               asp-route-Branch="@Model.BranchVM.CurrentBranch.FriendlyName"
+                                               asp-route-RequestFile="@Model.FileVM.FullPath">
                                                 <img src="~/images/octicons/pencil.svg">
                                             </a>
                                             <a class="mx-2" href="#"><img src="~/images/octicons/trashcan.svg"></a>
@@ -122,7 +124,7 @@
                                     <div class="row">
                                         <div class="col">
                                             <pre class="mb-0">
-                                            <code class="@Model.FileInfo.LanguageShort code-block">@Model.FileInfo.Content
+                                            <code class="@Model.FileVM.LanguageShort code-block">@Model.FileVM.Content
                                                 </code>
                                             </pre>
                                         </div>

@@ -1,10 +1,12 @@
 ﻿@page "{Owner}/{Reponame}"
 @model BitHub.Pages.Repositories.IndexModel
+@using BitHub.Helpers.Repository
 @{
     ViewData["Title"] = "Index";
 }
 
 <div class="container-fluid body-content">
+
 
     @await Html.PartialAsync("_RepositoryHeaderPartial", Model.RepoInfo)
 
@@ -39,14 +41,14 @@
                                     <div class="col">
                                         <a class="nav-link text-dark text-center" href="#">
                                             <img src="~/images/octicons/history.svg">
-                                            <span class="font-weight-bold">@Model.RepoInfo_Additional.CommitCountInBranch</span>
+                                            <span class="font-weight-bold">@Model.HeaderSpecVM.CommitCountInBranch</span>
                                             commits
                                         </a>
                                     </div>
                                     <div class="col">
                                         <a class="nav-link text-dark text-center" href="#">
                                             <img src="~/images/octicons/git-branch.svg">
-                                            <span class="font-weight-bold">@Model.RepoInfo_Additional.BranchCount</span>
+                                            <span class="font-weight-bold">@Model.HeaderSpecVM.BranchCount</span>
                                             branches
                                         </a>
                                     </div>
@@ -78,10 +80,10 @@
                                 <div class="dropdown">
                                     <button class="btn dropdown-toggle btn-sm btn-outline-dark" type="button" id="dropdownMenuButton" data-toggle="dropdown">
                                         Branch:
-                                        <span class="font-weight-bold align-bottom branch-name-span">@Model.RepoInfo_Additional.CurrentBranch.FriendlyName</span>
+                                        <span class="font-weight-bold align-bottom branch-name-span">@Model.BranchVM.CurrentBranch.FriendlyName</span>
                                     </button>
                                     <div class="dropdown-menu dropdown-branch-list">
-                                        @foreach (var branch in Model.RepoInfo_Additional.Branches)
+                                        @foreach (var branch in Model.BranchVM.Branches)
                                         {
                                             <a class="dropdown-item" href="#">@branch</a>
                                             <div class="dropdown-divider"></div>
@@ -119,14 +121,14 @@
                                         <div class="col text-right">
                                             Latest commit
                                             <a href="#" class="text-dark">
-                                                <code>@Model.RepoInfo_Additional.CurrentBranch.Tip.Sha.Substring(0, 7)</code>
+                                                <code>@Model.BranchVM.CurrentBranch.Tip.Sha.Substring(0, 7)</code>
                                             </a>
-                                            <span> @Model.GetTimeDifference(Model.RepoInfo_Additional.CurrentBranch.Tip.Committer.When)</span>
+                                            <span> @DateTimeHelper.GetTimeDifference(Model.BranchVM.CurrentBranch.Tip.Committer.When)</span>
                                         </div>
                                     </div>
                                 </li>
 
-                                @foreach (var entry in Model.RepoInfo_Additional.TableEntries)
+                                @foreach (var entry in Model.TableVM.TableEntries)
                                 {
                                     <li class="list-group-item py-2 repo-file-dir-entry">
                                         <div class="row">
@@ -136,7 +138,7 @@
                                                     <a asp-page="Directory"
                                                        asp-route-Owner="@Model.RepoInfo.Owner"
                                                        asp-route-Reponame="@Model.RepoInfo.RepoName"
-                                                       asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
+                                                       asp-route-Branch="@Model.BranchVM.CurrentBranch.FriendlyName"
                                                        asp-route-RequestDir="@entry.RelativePath">
                                                         <img class="mr-1" src="~/images/octicons/file-directory.svg">
                                                         @entry.FriendlyName
@@ -147,7 +149,7 @@
                                                     <a asp-page="File"
                                                        asp-route-Owner="@Model.RepoInfo.Owner"
                                                        asp-route-Reponame="@Model.RepoInfo.RepoName"
-                                                       asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
+                                                       asp-route-Branch="@Model.BranchVM.CurrentBranch.FriendlyName"
                                                        asp-route-RequestFile="@entry.RelativePath">
                                                         <img class="mr-1" src="~/images/octicons/file.svg" />
                                                         @entry.FriendlyName
@@ -167,7 +169,7 @@
                                                 }
                                             </div>
                                             <div class="col-2 text-muted text-right">
-                                                @(entry.LatestCommit == null ? string.Empty : Model.GetTimeDifference(entry.LatestCommit.Committer.When))
+                                                @(entry.LatestCommit == null ? string.Empty : DateTimeHelper.GetTimeDifference(entry.LatestCommit.Committer.When))
                                             </div>
                                         </div>
                                     </li>

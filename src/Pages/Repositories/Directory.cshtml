@@ -1,5 +1,6 @@
 ﻿@page "{Owner}/{Reponame}/{Branch}/{RequestDir}"
 @model BitHub.Pages.Repositories.DirectoryModel
+@using BitHub.Helpers.Repository
 @{
     ViewData["Title"] = "Directory";
 }
@@ -21,10 +22,10 @@
                                 <div class="dropdown">
                                     <button class="btn dropdown-toggle btn-sm btn-outline-dark" type="button" id="dropdownMenuButton" data-toggle="dropdown">
                                         Branch:
-                                        <span class="font-weight-bold align-bottom branch-name-span">@Model.RepoInfo_Additional.CurrentBranch.FriendlyName</span>
+                                        <span class="font-weight-bold align-bottom branch-name-span">@Model.BranchVM.CurrentBranch.FriendlyName</span>
                                     </button>
                                     <div class="dropdown-menu dropdown-branch-list">
-                                        @foreach (var branch in Model.RepoInfo_Additional.Branches)
+                                        @foreach (var branch in Model.BranchVM.Branches)
                                         {
                                             <a class="dropdown-item" href="#">@branch</a>
                                             <div class="dropdown-divider"></div>
@@ -51,18 +52,19 @@
                             <li class="breadcrumb-item">
                                 <strong><a asp-page="./Index" asp-route-Owner="@Model.RepoInfo.Owner" asp-route-Reponame="@Model.RepoInfo.RepoName" class="active">@Model.RepoInfo.RepoName</a></strong>
                             </li>
-                            @foreach (var parentDir in Model.RepoInfo_Additional.ParentDirectories)
+                            @{ int curLevel = 0; }
+                            @foreach (var parentDir in Model.PathVM.ParentDirectories)
                             {
                                 <li class="breadcrumb-item">
                                     <a asp-page="./Directory"
                                        asp-route-Owner="@Model.RepoInfo.Owner"
                                        asp-route-Reponame="@Model.RepoInfo.RepoName"
-                                       asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
-                                       asp-route-RequestDir="@Model.ReconstructPath(parentDir)">@parentDir</a>
+                                       asp-route-Branch="@Model.BranchVM.CurrentBranch.FriendlyName"
+                                       asp-route-RequestDir="@DirectoryHelper.ReconstructPath(curLevel, Model.PathVM.ParentDirectories, Model.PathVM.CurrentPath)">@parentDir</a>
                                 </li>
                             }
                             <li class="breadcrumb-item active">
-                                @Model.RepoInfo_Additional.CurrentPath
+                                @Model.PathVM.CurrentPath
                             </li>
                         </ol>
                     </div>
@@ -79,9 +81,9 @@
                                         <div class="col text-right">
                                             Latest commit
                                             <a href="#" class="text-dark">
-                                                <code>@Model.RepoInfo_Additional.CurrentBranch.Tip.Sha.Substring(0, 7)</code>
+                                                <code>@Model.BranchVM.CurrentBranch.Tip.Sha.Substring(0, 7)</code>
                                             </a>
-                                            <span> @Model.GetTimeDifference(Model.RepoInfo_Additional.CurrentBranch.Tip.Committer.When)</span>
+                                            <span> @DateTimeHelper.GetTimeDifference(Model.BranchVM.CurrentBranch.Tip.Committer.When)</span>
                                         </div>
                                     </div>
                                 </li>
@@ -90,13 +92,13 @@
                                 <li class="list-group-item py-1 repo-file-dir-entry">
                                     <div class="row">
                                         <div class="col">
-                                            @if (Model.RepoInfo_Additional.ParentDirectories.Any())
+                                            @if (Model.PathVM.ParentDirectories.Any())
                                             {
                                                 <a asp-page="Directory"
                                                    asp-route-Owner="@Model.RepoInfo.Owner"
                                                    asp-route-Reponame="@Model.RepoInfo.RepoName"
-                                                   asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
-                                                   asp-route-RequestDir="@Model.ReconstructPath(Model.RepoInfo_Additional.ParentDirectories.Last())">
+                                                   asp-route-Branch="@Model.BranchVM.CurrentBranch.FriendlyName"
+                                                   asp-route-RequestDir="@DirectoryHelper.ReconstructPath(Model.PathVM.ParentDirectories.Count - 1, Model.PathVM.ParentDirectories, Model.PathVM.CurrentPath)">
                                                     <strong> .. </strong>
                                                 </a>
                                             }
@@ -114,7 +116,7 @@
                                 </li>
 
 
-                                @foreach (var entry in Model.RepoInfo_Additional.TableEntries)
+                                @foreach (var entry in Model.TableVM.TableEntries)
                                 {
                                     <li class="list-group-item py-2 repo-file-dir-entry">
                                         <div class="row">
@@ -124,7 +126,7 @@
                                                     <a asp-page="Directory"
                                                        asp-route-Owner="@Model.RepoInfo.Owner"
                                                        asp-route-Reponame="@Model.RepoInfo.RepoName"
-                                                       asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
+                                                       asp-route-Branch="@Model.BranchVM.CurrentBranch.FriendlyName"
                                                        asp-route-RequestDir="@entry.RelativePath">
                                                         <img class="mr-1" src="~/images/octicons/file-directory.svg">
                                                         @entry.FriendlyName
@@ -135,7 +137,7 @@
                                                     <a asp-page="File"
                                                        asp-route-Owner="@Model.RepoInfo.Owner"
                                                        asp-route-Reponame="@Model.RepoInfo.RepoName"
-                                                       asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
+                                                       asp-route-Branch="@Model.BranchVM.CurrentBranch.FriendlyName"
                                                        asp-route-RequestFile="@entry.RelativePath">
                                                         <img class="mr-1" src="~/images/octicons/file.svg" />
                                                         @entry.FriendlyName
@@ -155,7 +157,7 @@
                                                 }
                                             </div>
                                             <div class="col-2 text-muted text-right">
-                                                @(entry.LatestCommit == null ? string.Empty : Model.GetTimeDifference(entry.LatestCommit.Committer.When))
+                                                @(entry.LatestCommit == null ? string.Empty : DateTimeHelper.GetTimeDifference(entry.LatestCommit.Committer.When))
                                             </div>
                                         </div>
                                     </li>

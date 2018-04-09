@@ -1,5 +1,6 @@
 ﻿@page "{Owner}/{Reponame}/{Branch}/{RequestFile}"
 @model BitHub.Pages.Repositories.EditModel
+@using BitHub.Helpers.Repository
 @{
     ViewData["Title"] = "Edit";
 }
@@ -28,14 +29,14 @@
                                             <strong><a asp-page="./Index" asp-route-Owner="@Model.RepoInfo.Owner" asp-route-Reponame="@Model.RepoInfo.RepoName" class="active">@Model.RepoInfo.RepoName</a></strong>
                                         </li>
                                         @{ int curLevel = 0; }
-                                        @foreach (var parentDir in Model.RepoInfo_Additional.ParentDirectories)
+                                        @foreach (var parentDir in Model.PathVM.ParentDirectories)
                                         {
                                             <li class="breadcrumb-item">
                                                 <a asp-page="./Directory"
                                                    asp-route-Owner="@Model.RepoInfo.Owner"
                                                    asp-route-Reponame="@Model.RepoInfo.RepoName"
-                                                   asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
-                                                   asp-route-RequestDir="@Model.ReconstructPath(curLevel++)">@parentDir</a>
+                                                   asp-route-Branch="@Model.BranchVM.CurrentBranch.FriendlyName"
+                                                   asp-route-RequestFile="@DirectoryHelper.ReconstructPath(curLevel, Model.PathVM.ParentDirectories, Model.PathVM.CurrentPath)">@parentDir</a>
                                             </li>
                                         }
                                         <li class="breadcrumb-item d-inline-flex">
@@ -43,7 +44,7 @@
                                                    class="form-control"
                                                    id="modified-file-name"
                                                    placeholder="Name your file..."
-                                                   value="@Model.RepoInfo_Additional.CurrentPath">
+                                                   value="@Model.PathVM.CurrentPath">
                                         </li>
                                     </ol>
                                 </li>
@@ -57,8 +58,8 @@
                                     <a asp-page="./File"
                                        asp-route-Owner="@Model.RepoInfo.Owner"
                                        asp-route-Reponame="@Model.RepoInfo.RepoName"
-                                       asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
-                                       asp-route-RequestFile="@Model.FileInfo.FullPath">cancel</a>
+                                       asp-route-Branch="@Model.BranchVM.CurrentBranch.FriendlyName"
+                                       asp-route-RequestFile="@Model.FileVM.FullPath">cancel</a>
                                 </li>
                             </ul>
                         </div>
@@ -117,7 +118,7 @@
                                     <div class="form-group my-3">
                                         <input asp-for="Input.Title"
                                                class="form-control input-contrast"
-                                               placeholder="Update @Model.RepoInfo_Additional.CurrentPath">
+                                               placeholder="Update @Model.PathVM.CurrentPath">
                                     </div>
                                     <div class="form-group my-3">
                                         <textarea asp-for="Input.Description"
@@ -132,7 +133,7 @@
                                                    id="customRadio1" name="customRadio" class="custom-control-input" checked="checked" onclick="showEditBranchInput(false)">
                                             <label class="custom-control-label" for="customRadio1">
                                                 <img class="mx-1 align-baseline" src="~/images/octicons/git-commit.svg"> Commit directly to the
-                                                <span class="branch-name">@Model.RepoInfo_Additional.CurrentBranch.FriendlyName</span> branch.
+                                                <span class="branch-name">@Model.BranchVM.CurrentBranch.FriendlyName</span> branch.
                                             </label>
                                         </div>
                                         <div class="custom-control custom-radio">
@@ -162,8 +163,8 @@
                                asp-page="./File"
                                asp-route-Owner="@Model.RepoInfo.Owner"
                                asp-route-Reponame="@Model.RepoInfo.RepoName"
-                               asp-route-Branch="@Model.RepoInfo_Additional.CurrentBranch.FriendlyName"
-                               asp-route-RequestFile="@Model.FileInfo.FullPath">Cancel</a>
+                               asp-route-Branch="@Model.BranchVM.CurrentBranch.FriendlyName"
+                               asp-route-RequestFile="@Model.FileVM.FullPath">Cancel</a>
                         </div>
                     </div>
                 </form>
@@ -173,8 +174,8 @@
             </div>
         </div>
 
-        <div id="original-file-name" style="display:none">@Model.RepoInfo_Additional.CurrentPath</div>
-        <div id="original-file-text" style="display:none">@Model.FileInfo.Content</div>
+        <div id="original-file-name" style="display:none">@Model.PathVM.CurrentPath</div>
+        <div id="original-file-text" style="display:none">@Model.FileVM.Content</div>
 
         <div class="tab-pane fade" id="nav-issues">
             aliqua ullamco irure incididunt irure non esse consectetur nostrud minim non minim occaecat. Amet duis do nisi
