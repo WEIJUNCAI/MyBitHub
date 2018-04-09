@@ -14,35 +14,61 @@ namespace BitHub.Models.Repository
 
     public class RepositoryViewModel
     {
-        public int CommitCountInBranch { get; set; }
+        public RepositoryViewModel(
+            int commitCountInBranch,
+            int branchCount,
+            int releaseCount,
+            string currentPath,
+            Branch currentBranch,
+            IEnumerable<string> parentDirectories,
+            IEnumerable<string> branches,
+            IEnumerable<RepoListEntryViewModel> tableEntries)
+        {
+            CommitCountInBranch = commitCountInBranch;
+            BranchCount = branchCount;
+            ReleaseCount = releaseCount;
+            CurrentPath = currentPath;
+            ParentDirectories = parentDirectories;
+            Branches = branches;
+            TableEntries = tableEntries;
+            CurrentBranch = currentBranch;
+        }
 
-        public int BranchCount { get; set; }
-
-        public int ReleaseCount { get; set; }
+        public int CommitCountInBranch { get;  }
+        public int BranchCount { get;  }
+        public int ReleaseCount { get;  }
 
         // TODO: add custom attribute to validate the path
         // The name of current directory / file (e.g., the last level in directory tree)
         // the full path can be reconstructed using ParentDirectories
 
-        public string CurrentPath { get; set; }
-
-        public Branch CurrentBranch { get; set; }
-
-        public IEnumerable<string> ParentDirectories { get; set; }
-
-        public IEnumerable<string> Branches { get; set; }
-
-        public IEnumerable<RepoListEntryViewModel> TableEntries { get; set; }
+        public string CurrentPath { get;  }
+        public Branch CurrentBranch { get;  }
+        public IEnumerable<string> ParentDirectories { get;  }
+        public IEnumerable<string> Branches { get;  }
+        public IEnumerable<RepoListEntryViewModel> TableEntries { get;  }
 
     }
 
 
     public class RepoListEntryViewModel
     {
-        public EntryType EntryType { get; set; }
-        public string FriendlyName { get; set; }
-        public string RelativePath { get; set; }
-        public Commit LatestCommit { get; set; }
+        public RepoListEntryViewModel(
+            EntryType entryType, 
+            string friendlyName, 
+            string relativePath, 
+            Commit latestCommit)
+        {
+            EntryType = entryType;
+            FriendlyName = friendlyName;
+            RelativePath = relativePath;
+            LatestCommit = latestCommit;
+        }
+
+        public EntryType EntryType { get;  }
+        public string FriendlyName { get;  }
+        public string RelativePath { get;  }
+        public Commit LatestCommit { get;  }
     }
 
     public enum EntryType { File, Directory }

@@ -7,17 +7,18 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 using BitHub.Data;
 using BitHub.Services;
 using BitHub.Models.Repository;
 
 // <---------TODO--------->
-// - This page should only be asscessible to signed in user.
 // - Add README file generation logic
 
 namespace BitHub.Pages.Repositories
 {
+    [Authorize(policy: "SignedIn")]
     public class NewModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;

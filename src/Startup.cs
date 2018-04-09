@@ -9,11 +9,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using BitHub.Authorizations.Requirements;
+using Microsoft.AspNetCore.Authorization;
 
 using BitHub.Data;
 using BitHub.Services;
 using BitHub.Options;
 using LibGit2Sharp;
+using BitHub.Authorizations.Handlers;
 
 namespace BitHub
 {
@@ -79,19 +82,26 @@ namespace BitHub
             //    options.SlidingExpiration = true;
             //});
 
-
-
             // Register no-op EmailSender used by account confirmation and password reset during development
             // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=532713
             services.AddSingleton<IEmailSender, EmailSender>();
-
             services.AddSingleton<IDirectoryManager, LocalDirectoryManager>();
-
             services.AddSingleton<IFileManager, LocalFileManager>();
-
             services.AddScoped<IFileInfoManager, LocalFileInfo>();
+            services.AddScoped<IAuthorizationHandler, SignInHandler>();
+            services.AddScoped<IAuthorizationHandler, RepositoryOwnerHandler>();
             // container will call Dispose for IDisposable types it creates
             //services.AddScoped<Repository>();
+
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("SignedIn", policy =>
+                    policy.Requirements.Add(new SignInRequirement(true)));
+                options.AddPolicy("RepoOwner", policy =>
+                    policy.Requirements.Add(new RepositoryOwnerRequirement(true)));
+            });
+
 
             services.AddDbContext<Models.MovieContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("MovieContext")));

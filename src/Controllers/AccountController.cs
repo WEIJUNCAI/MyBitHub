@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 using BitHub.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BitHub.Controllers
 {
@@ -24,6 +25,8 @@ namespace BitHub.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(policy: "SignedIn")]
+
         public async Task<IActionResult> SignOut()
         {
             await _signInManager.SignOutAsync();
