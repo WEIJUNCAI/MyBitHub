@@ -8,18 +8,17 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using System;
 
-namespace BitHub.Data.Migrations
+namespace BitHub.Migrations.ApplicationDb
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180328011518_AddRepoModelProperties")]
-    partial class AddRepoModelProperties
+    [Migration("20180413214619_InitialCreateMacOS")]
+    partial class InitialCreateMacOS
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.0.2-rtm-10011")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "2.0.2-rtm-10011");
 
             modelBuilder.Entity("BitHub.Data.ApplicationUser", b =>
                 {
@@ -68,8 +67,7 @@ namespace BitHub.Data.Migrations
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+                        .HasName("UserNameIndex");
 
                     b.ToTable("AspNetUsers");
                 });
@@ -124,7 +122,7 @@ namespace BitHub.Data.Migrations
 
                     b.HasIndex("TagID");
 
-                    b.ToTable("RepoTagmentModel");
+                    b.ToTable("Tagments");
                 });
 
             modelBuilder.Entity("BitHub.Models.Repository.RepoTagModel", b =>
@@ -137,7 +135,7 @@ namespace BitHub.Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("RepoTagModel");
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -158,8 +156,7 @@ namespace BitHub.Data.Migrations
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
+                        .HasName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles");
                 });

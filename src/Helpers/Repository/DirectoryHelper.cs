@@ -34,13 +34,13 @@ namespace BitHub.Helpers.Repository
         // This skip logic might be incorrect
 
         public static void GetRelativeDirsAndFiles(this IDirectoryManager manager,
-            string rootFullPath, out IEnumerable<string> relativeDirs, out IEnumerable<string> relativeFiles)
+            string parentFullPath, string targetFullPath, out IEnumerable<string> relativeDirs, out IEnumerable<string> relativeFiles)
         {
             IEnumerable<string> fullPathDirs, fullPathFiles;
 
             try
             {
-                manager.GetDirsAndFiles(rootFullPath, out fullPathDirs, out fullPathFiles);
+                manager.GetDirsAndFiles(targetFullPath, out fullPathDirs, out fullPathFiles);
             }
             catch(Exception)
             {
@@ -49,11 +49,11 @@ namespace BitHub.Helpers.Repository
             }
 
             relativeDirs = fullPathDirs
-                 .Select(dir => GetRelativePath(rootFullPath, dir))
+                 .Select(dir => GetRelativePath(parentFullPath, dir))
                  .Where(dir => !dir.StartsWith('.')).ToArray();
 
             relativeFiles = fullPathFiles
-                 .Select(file => GetRelativePath(rootFullPath, file))
+                 .Select(file => GetRelativePath(parentFullPath, file))
                  .Where(file => !file.StartsWith('.')).ToArray();
         }
 

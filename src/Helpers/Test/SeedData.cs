@@ -24,7 +24,7 @@ namespace BitHub.Helpers.Test
                         Owner = "libgit2",
                         RepoName = "libgit2sharp",
                         Description = ".NET + git = ❤",
-                        RootPath = @"C:\Users\Jason\OneDrive - Syracuse University\GitHub\libgit\libgit2sharp",
+                        RootPath = @"/Users/jasonc/Documents/GitHub/libgit2sharp",
                         WatchCount = 124,
                         StarCount = 1390,
                         ForkCount = 536

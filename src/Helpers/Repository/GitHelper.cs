@@ -72,7 +72,7 @@ namespace BitHub.Helpers.Repository
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
-                FileName = "cmd.exe",
+                FileName = "/bin/bash",
                 RedirectStandardOutput = true,
                 RedirectStandardInput = true,
                 WorkingDirectory = repoRootPath
@@ -84,19 +84,18 @@ namespace BitHub.Helpers.Repository
 
             foreach (string path in targetRelativePaths)
             {
-                string command = $"git log -n 1 {commandOption} \"{path}\"\r\n";
+                string command = $"git log -n 1 {commandOption} \"{path}\"\n";
                 process.StandardInput.Write(command);
 
                 while (true)
                 {
                     string line = process.StandardOutput.ReadLine();
-                    if (line.IndexOf(command.Substring(0, command.Length - 2)) != -1)
+                    if (line.IndexOf("commit ") == 0)
                     {
-                        string gitOutputLine = process.StandardOutput.ReadLine();
-                        int index1 = gitOutputLine.IndexOf(' ');
+                        int index1 = line.IndexOf(' ');
                         if (index1 != -1)
-                            gitOutputLine = gitOutputLine.Substring(index1 + 1, gitOutputLine.Length - index1 - 1);
-                        commitShas.Add(gitOutputLine);
+                            line = line.Substring(index1 + 1, line.Length - index1 - 1);
+                        commitShas.Add(line);
                         break;
                     }
                 }

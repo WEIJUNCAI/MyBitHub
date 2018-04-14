@@ -58,7 +58,7 @@ namespace BitHub.Pages.Repositories
             {
                 InitializeRepositoryObj(RepoInfo.RootPath);
                 IEnumerable<string> dirs, files;
-                _directoryManager.GetRelativeDirsAndFiles(RepoInfo.RootPath, out dirs, out files);
+                _directoryManager.GetRelativeDirsAndFiles(RepoInfo.RootPath, RepoInfo.RootPath, out dirs, out files);
                 InitHeaderSpecVM();
                 InitBranchVM();
                 InitTableVM(RepoInfo.RootPath, dirs, files);
