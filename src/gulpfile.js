@@ -27,13 +27,15 @@ var nodeDependenciesJs = [
     rootPaths.nodeDependencyRoot + "diff2html/dist/diff2html.js",
     rootPaths.nodeDependencyRoot + "diff2html/dist/diff2html-ui.js",
     rootPaths.nodeDependencyRoot + "diff/dist/diff.js",
-    rootPaths.nodeDependencyRoot + "ace-builds/src-noconflict/*.js"
+    rootPaths.nodeDependencyRoot + "ace-builds/src-noconflict/*.js",
+    rootPaths.nodeDependencyRoot + "turbolinks/dist/turbolinks.js",
+    rootPaths.nodeDependencyRoot + "marked/marked.min.js"
 ];
 
 var nodeDependenciesCss = [
 
     rootPaths.nodeDependencyRoot + "diff2html/dist/diff2html.css"
-]
+];
 
 
 gulp.task("clean:js", function (cb) {

@@ -239,4 +239,54 @@ span.d2h-tag {
     background-position: 10px 10px;
 }
 
+
+.form-group.errored .error {
+    color: #86181d;
+    background-color: #ffdce0;
+    border-color: #cea0a5
+}
+
+
+
+.form-group.errored .error {
+    position: absolute;
+    z-index: 10;
+    display: block;
+    max-width: 450px;
+    padding: 5px 8px;
+    margin: 5px 0 0;
+    font-size: 13px;
+    font-weight: 400;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 3px
+}
+
+
+.form-group.errored .error::before {
+    position: absolute;
+    top: -7px;
+    left: 9px;
+    display: inline-block;
+    border-right: 7px solid transparent;
+    border-bottom: 7px solid #cea0a5;
+    border-left: 7px solid transparent;
+    content: ''
+}
+
+.form-group.errored .error::after {
+    position: absolute;
+    top: -6px;
+    left: 10px;
+    display: inline-block;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #ffdce0;
+    border-left: 6px solid transparent;
+    content: ''
+}
+
+.form-group.errored label {
+    color: #cb2431
+}
+
 /* if the changes did not apply, try clear the cache*/

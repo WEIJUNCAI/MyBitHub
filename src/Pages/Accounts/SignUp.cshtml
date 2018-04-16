@@ -20,28 +20,28 @@
                 <div class="form-group">
                     <label asp-for="Input.Username">Username</label>
                     <input asp-for="Input.Username" class="form-control">
-                    <span asp-validation-for="Input.Username" class="text-danger"></span>
+                    <span asp-validation-for="Input.Username" class="error-span"></span>
                     <small class="form-text text-muted">This will be your username.</small>
                 </div>
 
                 <div class="form-group">
                     <label asp-for="Input.Email">Email Address</label>
                     <input asp-for="Input.Email" class="form-control">
-                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    <span asp-validation-for="Input.Email" class="error-span"></span>
                     <small class="form-text text-muted">Use your e-mail to register.</small>
                 </div>
 
                 <div class="form-group">
                     <label asp-for="Input.Password">Password</label>
                     <input asp-for="Input.Password" class="form-control">
-                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    <span asp-validation-for="Input.Password" class="error-span"></span>
                     <small class="form-text text-muted">Use at least one lowercase letter, one numeral, and seven characters.</small>
                 </div>
 
                 <div class="form-group">
                     <label asp-for="Input.ConfirmPassword">Confirm Password</label>
                     <input asp-for="Input.ConfirmPassword" class="form-control">
-                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                    <span asp-validation-for="Input.ConfirmPassword" class="error-span"></span>
                     <small class="form-text text-muted">Make sure you entered your password correctly.</small>
                 </div>
 
@@ -61,4 +61,8 @@
 
 @section ValidationScripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
+}
+
+@section PageAdditionalPostScripts { 
+    <script src="~/js/postFormActions.js" asp-append-version="true"></script>
 }

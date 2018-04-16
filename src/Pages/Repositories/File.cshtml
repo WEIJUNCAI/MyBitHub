@@ -26,12 +26,16 @@
                                 <div class="dropdown">
                                     <button class="btn dropdown-toggle btn-sm btn-outline-dark " type="button" id="dropdownMenuButton" data-toggle="dropdown">
                                         Branch:
-                                        <span class="font-weight-bold branch-name-span align-bottom">master</span>
+                                        <span class="font-weight-bold branch-name-span align-bottom">@Model.BranchVM.CurrentBranch.FriendlyName</span>
                                     </button>
                                     <div class="dropdown-menu dropdown-branch-list">
                                         @foreach (var branch in Model.BranchVM.Branches)
                                         {
-                                            <a class="dropdown-item" href="#">@branch</a>
+                                            <a class="dropdown-item"
+                                               asp-page="./Index"
+                                               asp-route-Owner="@Model.RepoInfo.Owner"
+                                               asp-route-Reponame="@Model.RepoInfo.RepoName"
+                                               asp-route-Branch="@branch">@branch</a>
                                             <div class="dropdown-divider"></div>
                                         }
                                     </div>
@@ -61,7 +65,7 @@
                                        asp-route-Owner="@Model.RepoInfo.Owner"
                                        asp-route-Reponame="@Model.RepoInfo.RepoName"
                                        asp-route-Branch="@Model.BranchVM.CurrentBranch.FriendlyName"
-                                       asp-route-RequestFile="@DirectoryHelper.ReconstructPath(curLevel, Model.PathVM.ParentDirectories, Model.PathVM.CurrentPath)">@parentDir</a>
+                                       asp-route-RequestDir="@DirectoryHelper.ReconstructPath(curLevel, Model.PathVM.ParentDirectories, Model.PathVM.CurrentPath)">@parentDir</a>
                                 </li>
                             }
                             <li class="breadcrumb-item active">

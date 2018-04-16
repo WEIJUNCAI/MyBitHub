@@ -70,7 +70,7 @@ namespace BitHub.Pages.Repositories
                     _repository.CheckoutBranch(decodedBranch);
 
                 IEnumerable<string> dirs, files;
-                _directoryManager.GetRelativeDirsAndFiles(RepoInfo.RootPath, out dirs, out files);
+                _directoryManager.GetRelativeDirsAndFiles(RepoInfo.RootPath, reqestDirFullPath, out dirs, out files);
 
                 InitHeaderSpecVM();
                 InitBranchVM();

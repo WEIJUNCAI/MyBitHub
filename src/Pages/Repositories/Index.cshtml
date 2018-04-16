@@ -1,9 +1,10 @@
-﻿@page "{Owner}/{Reponame}"
+﻿@page "{Owner}/{Reponame}/{Branch?}"
 @model BitHub.Pages.Repositories.IndexModel
 @using BitHub.Helpers.Repository
 @{
     ViewData["Title"] = "Index";
 }
+
 
 <div class="container-fluid body-content">
 
@@ -85,7 +86,11 @@
                                     <div class="dropdown-menu dropdown-branch-list">
                                         @foreach (var branch in Model.BranchVM.Branches)
                                         {
-                                            <a class="dropdown-item" href="#">@branch</a>
+                                            <a class="dropdown-item"
+                                               asp-page="./Index"
+                                               asp-route-Owner="@Model.RepoInfo.Owner"
+                                               asp-route-Reponame="@Model.RepoInfo.RepoName"
+                                               asp-route-Branch="@branch">@branch</a>
                                             <div class="dropdown-divider"></div>
                                         }
                                     </div>
@@ -179,81 +184,29 @@
                     </div>
                 </div>
 
-
-                <div class="row my-3">
-                    <div class="col">
-                        <div class="card">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item card-readme-header py-2 pl-3 bg-light">
-                                    <span class="">
-                                        <img src="~/images/octicons/book.svg">
-                                        README.md
-                                    </span>
-                                </li>
-                            </ul>
-                            <div class="card-body">
-                                <div class="container px-4 py-4">
-                                    <article class="markdown-body entry-content" itemprop="text">
-                                        <h1><a href="#libgit2sharp" aria-hidden="true" class="anchor" id="user-content-libgit2sharp"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>LibGit2Sharp</h1>
-                                        <p>
-                                            <a href="https://ci.appveyor.com/project/libgit2/libgit2sharp/branch/master" rel="nofollow"><img src="https://camo.githubusercontent.com/2e86ce4b91d58bfd838d3b80da55c3c7f51c0801/68747470733a2f2f63692e6170707665796f722e636f6d2f6170692f70726f6a656374732f7374617475732f387178636f71646f396b7037783277392f6272616e63682f6d61737465723f7376673d74727565" alt="master win" data-canonical-src="https://ci.appveyor.com/api/projects/status/8qxcoqdo9kp7x2w9/branch/master?svg=true" style="max-width:100%;"></a>
-                                            <a href="https://travis-ci.org/libgit2/libgit2sharp/branches" rel="nofollow"><img src="https://camo.githubusercontent.com/654b5b69d901fa10af067a242d1c6e5df4446372/68747470733a2f2f7472617669732d63692e6f72672f6c6962676974322f6c69626769743273686172702e7376673f6272616e63683d6d6173746572" alt="master nix" data-canonical-src="https://travis-ci.org/libgit2/libgit2sharp.svg?branch=master" style="max-width:100%;"></a>
-                                            <a href="https://scan.coverity.com/projects/2088" rel="nofollow"><img src="https://camo.githubusercontent.com/ba20a5437e46c18fa946b6bf01e3b2d872c6a2bc/68747470733a2f2f7363616e2e636f7665726974792e636f6d2f70726f6a656374732f323038382f62616467652e737667" alt="coverity" data-canonical-src="https://scan.coverity.com/projects/2088/badge.svg" style="max-width:100%;"></a>
-                                            <a href="https://coveralls.io/r/libgit2/libgit2sharp?branch=master" rel="nofollow"><img src="https://camo.githubusercontent.com/b402bb04faa22d2208995102fdf4d816d930e191/68747470733a2f2f636f766572616c6c732e696f2f7265706f732f6c6962676974322f6c69626769743273686172702f62616467652e7376673f6272616e63683d6d6173746572" alt="coveralls" data-canonical-src="https://coveralls.io/repos/libgit2/libgit2sharp/badge.svg?branch=master" style="max-width:100%;"></a>
-                                        </p>
-                                        <p><strong>LibGit2Sharp brings all the might and speed of <a href="http://libgit2.github.com/">libgit2</a>, a native Git implementation, to the managed world of .NET and Mono.</strong></p>
-                                        <h2><a href="#prerequisites" aria-hidden="true" class="anchor" id="user-content-prerequisites"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Prerequisites</h2>
-                                        <ul>
-                                            <li><strong>Windows:</strong> .NET 4.0+</li>
-                                            <li><strong>Linux/Mac OS X:</strong> Mono 3.6+</li>
-                                        </ul>
-                                        <h2><a href="#online-resources" aria-hidden="true" class="anchor" id="user-content-online-resources"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Online resources</h2>
-                                        <ul>
-                                            <li><a href="http://nuget.org/List/Packages/LibGit2Sharp" rel="nofollow">NuGet package</a> (Requires NuGet 2.7+)</li>
-                                            <li><a href="https://github.com/libgit2/libgit2sharp/">Source code</a></li>
-                                        </ul>
-                                        <h2><a href="#troubleshooting-and-support" aria-hidden="true" class="anchor" id="user-content-troubleshooting-and-support"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Troubleshooting and support</h2>
-                                        <ul>
-                                            <li>Usage or programming related question? Post it on <a href="http://stackoverflow.com/questions/tagged/libgit2sharp" rel="nofollow">StackOverflow</a> using the tag <em>libgit2sharp</em></li>
-                                            <li>Found a bug or missing a feature? Feed the <a href="https://github.com/libgit2/libgit2sharp/issues">issue tracker</a></li>
-                                            <li>Announcements and related miscellanea through Twitter (<a href="http://twitter.com/libgit2sharp" rel="nofollow">@@libgit2sharp</a>)</li>
-                                        </ul>
-                                        <h2><a href="#quick-contributing-guide" aria-hidden="true" class="anchor" id="user-content-quick-contributing-guide"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Quick contributing guide</h2>
-                                        <ul>
-                                            <li>Fork and clone locally</li>
-                                            <li>Create a topic specific branch. Add some nice feature. Do not forget the tests ;-)</li>
-                                            <li>Send a Pull Request to spread the fun!</li>
-                                        </ul>
-                                        <p>More thorough information available in the <a href="https://github.com/libgit2/libgit2sharp/wiki">wiki</a>.</p>
-                                        <h2><a href="#optimizing-unit-testing" aria-hidden="true" class="anchor" id="user-content-optimizing-unit-testing"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Optimizing unit testing</h2>
-                                        <p>LibGit2Sharp strives to have comprehensive and robust unit test suite to insure the quality of the software and to assist new contributors and users who can use the tests as sample to jump start development. There are over one-thousand unit-tests for LibGit2Sharp, this number will only grow as functionality is added.</p>
-                                        <p>You can do a few things to optimize running unit-tests on Windows:</p>
-                                        <ol>
-                                            <li>Set the <code>LibGit2TestPath</code> environment variable to a path in your development environment.</li>
-                                        </ol>
-                                        <ul>
-                                            <li>If the unit-test framework cannot find the specified folder at runtime, it will fall back to the default location.</li>
-                                        </ul>
-                                        <ol start="2">
-                                            <li>Configure your anti-virus software to ignore the <code>LibGit2TestPath</code> path.</li>
-                                            <li>Install a RAM disk like <a href="http://www.ltr-data.se/opencode.html/#ImDisk" rel="nofollow">IMDisk</a> and set <code>LibGit2TestPath</code> to use it.</li>
-                                        </ol>
-                                        <ul>
-                                            <li>Use <code>imdisk.exe -a -s 512M -m X: -p "/fs:fat /q /v:ramdisk /y"</code> to create a RAM disk. This command requires elevated privileges and can be placed into a scheduled task or run manually before you begin unit-testing.</li>
-                                        </ul>
-                                        <h2><a href="#authors" aria-hidden="true" class="anchor" id="user-content-authors"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Authors</h2>
-                                        <ul>
-                                            <li><strong>Code:</strong> The LibGit2Sharp <a href="https://github.com/libgit2/libgit2sharp/contributors">contributors</a></li>
-                                            <li><strong>Logo:</strong> <a href="https://github.com/jasonlong">Jason "blackant" Long</a></li>
-                                        </ul>
-                                        <h2><a href="#license" aria-hidden="true" class="anchor" id="user-content-license"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>License</h2>
-                                        <p>The MIT license (Refer to the <a href="https://github.com/libgit2/libgit2sharp/blob/master/LICENSE.md">LICENSE.md</a> file)</p>
-                                    </article>
+                @if (Model.ReadmeContent != null)
+                {
+                    <div class="row my-3">
+                        <div class="col">
+                            <div class="card">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item card-readme-header py-2 pl-3 bg-light">
+                                        <span class="">
+                                            <img src="~/images/octicons/book.svg">
+                                            README.md
+                                        </span>
+                                    </li>
+                                </ul>
+                                <div class="card-body">
+                                    <div class="container px-4 py-4">
+                                        <div id="readme-display"></div>
+                                        <div id="readme-content" class="d-none">@Model.ReadmeContent</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                }
             </div>
         </div>
         <div class="tab-pane fade" id="nav-issues">
@@ -266,3 +219,12 @@
         </div>
     </div>
 </div>
+
+@section PageAdditionalPostScripts {
+    <script src="~/js/marked.min.js"></script>
+    <script>
+        document.getElementById('readme-display').innerHTML =
+            marked(document.getElementById("readme-content").innerText);
+    </script>
+}
+

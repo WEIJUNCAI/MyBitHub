@@ -13,5 +13,6 @@ namespace BitHub.Services
         void Delete(string path);
         FileStream Open(string path, FileMode mode);
         void WriteAllText(string path, string contents);
+        string ReadAllText(string path);
     }
 }
