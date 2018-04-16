@@ -16,6 +16,7 @@ using BitHub.Extensions;
 using BitHub.Helpers.Repository;
 using BitHub.Services;
 using LibGit2Sharp;
+using System.Net;
 
 namespace BitHub.Pages.Repositories
 {
@@ -24,6 +25,7 @@ namespace BitHub.Pages.Repositories
         private readonly ApplicationDbContext _appDbContext;
         private readonly ILogger<IndexModel> _logger;
         private readonly IDirectoryManager _directoryManager;
+        private readonly IFileManager _fileManager;
         // need to create the Repository object in handler using the repo path
         // and the Repository class does not support configuration after creation
         // does not know how to do this in a built in container
@@ -32,15 +34,18 @@ namespace BitHub.Pages.Repositories
         public IndexModel(
             ApplicationDbContext applicationDbContext,
             ILogger<IndexModel> logger,
-            IDirectoryManager directoryManager)
+            IDirectoryManager directoryManager,
+            IFileManager fileManager)
         {
             _appDbContext = applicationDbContext;
             _logger = logger;
             _directoryManager = directoryManager;
+            _fileManager = fileManager;
         }
 
+        public string ReadmeContent { get; private set; }
 
-        public async Task<IActionResult> OnGetAsync(string owner, string reponame)
+        public async Task<IActionResult> OnGetAsync(string owner, string reponame, string branch)
         {
             ConfigureLoadNavigationProperties();
 
@@ -57,18 +62,28 @@ namespace BitHub.Pages.Repositories
             try
             {
                 InitializeRepositoryObj(RepoInfo.RootPath);
+
+                // Branch switching is handled by repo home page
+                // switch branch in any directory will bring back to home page
+                if (branch != null)
+                {
+                    string decodedBranch = WebUtility.UrlDecode(branch);
+                    if(_repository.Head.FriendlyName != decodedBranch)
+                        _repository.CheckoutBranch(decodedBranch);
+                }
+
                 IEnumerable<string> dirs, files;
-                _directoryManager.GetRelativeDirsAndFiles(RepoInfo.RootPath, out dirs, out files);
+                _directoryManager.GetRelativeDirsAndFiles(RepoInfo.RootPath, RepoInfo.RootPath, out dirs, out files);
                 InitHeaderSpecVM();
                 InitBranchVM();
                 InitTableVM(RepoInfo.RootPath, dirs, files);
-                
+                InitReadmeVM(RepoInfo.RootPath, files);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _logger.LogError($"Fatal error occured trying to retrieve info for repository \"{owner}/{reponame}\", exception:\n{ex.Message}");
+                _logger.LogError($"Fatal error occured trying to retrieve info for repository \"{owner}/{reponame}\", exception:\n{ex.Message}\n {ex.StackTrace}");
                 return NotFound();
-            } 
+            }
 
             return Page();
         }
@@ -94,7 +109,24 @@ namespace BitHub.Pages.Repositories
         }
 
 
+        private void InitReadmeVM(string rootPath, IEnumerable<string> relativeFilePaths)
+        {
+            string relativeReadmePath = relativeFilePaths.FirstOrDefault(
+                file => Path.GetFileName(file) == "README.md");
 
+            // no README.md, return
+            if (relativeReadmePath == null)
+                return;
+
+            try
+            {
+                ReadmeContent = _fileManager.ReadAllText(Path.Combine(rootPath, relativeReadmePath));
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Failed reading the content of README.md", ex);
+            }
+        }
 
     }
 }

@@ -69,7 +69,6 @@ namespace BitHub.Pages.Repositories
                 if (_repository.Head.FriendlyName != decodedBranch)
                     _repository.CheckoutBranch(decodedBranch);
 
-                _fileInfoManager.SetFilePath(reqestFileFullPath);
                 var fileRes = _fileManager.GetFileAllTextAndLineCount(reqestFileFullPath);
                 _fileInfoManager.SetFilePath(reqestFileFullPath);
                 long size = _fileInfoManager.GetLength();

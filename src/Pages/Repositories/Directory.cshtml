@@ -5,6 +5,8 @@
     ViewData["Title"] = "Directory";
 }
 
+
+
 <div class="container-fluid body-content">
 
     @await Html.PartialAsync("_RepositoryHeaderPartial", Model.RepoInfo)
@@ -27,7 +29,11 @@
                                     <div class="dropdown-menu dropdown-branch-list">
                                         @foreach (var branch in Model.BranchVM.Branches)
                                         {
-                                            <a class="dropdown-item" href="#">@branch</a>
+                                            <a class="dropdown-item" 
+                                               asp-page="./Index"
+                                               asp-route-Owner="@Model.RepoInfo.Owner"
+                                               asp-route-Reponame="@Model.RepoInfo.RepoName"
+                                               asp-route-Branch="@branch">@branch</a>
                                             <div class="dropdown-divider"></div>
                                         }
                                     </div>
@@ -179,3 +185,7 @@
         </div>
     </div>
 </div>
+
+@section PageAdditionalPostScripts {
+    <script src="~/js/marked.min.js"></script>
+}

@@ -32,5 +32,10 @@ namespace BitHub.Services
         {
             File.WriteAllText(path, content);
         }
+
+        public string ReadAllText(string path)
+        {
+            return File.ReadAllText(path);
+        }
     }
 }

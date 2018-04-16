@@ -34,26 +34,26 @@ namespace BitHub.Helpers.Repository
         // This skip logic might be incorrect
 
         public static void GetRelativeDirsAndFiles(this IDirectoryManager manager,
-            string rootFullPath, out IEnumerable<string> relativeDirs, out IEnumerable<string> relativeFiles)
+           string parentFullPath, string targetFullPath, out IEnumerable<string> relativeDirs, out IEnumerable<string> relativeFiles)
         {
             IEnumerable<string> fullPathDirs, fullPathFiles;
 
             try
             {
-                manager.GetDirsAndFiles(rootFullPath, out fullPathDirs, out fullPathFiles);
+                manager.GetDirsAndFiles(targetFullPath, out fullPathDirs, out fullPathFiles);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 relativeDirs = null; relativeFiles = null;
                 throw;
             }
 
             relativeDirs = fullPathDirs
-                 .Select(dir => GetRelativePath(rootFullPath, dir))
+                 .Select(dir => GetRelativePath(parentFullPath, dir))
                  .Where(dir => !dir.StartsWith('.')).ToArray();
 
             relativeFiles = fullPathFiles
-                 .Select(file => GetRelativePath(rootFullPath, file))
+                 .Select(file => GetRelativePath(parentFullPath, file))
                  .Where(file => !file.StartsWith('.')).ToArray();
         }
 
@@ -82,16 +82,16 @@ namespace BitHub.Helpers.Repository
         public static string ReconstructPath(int lastLevel, IEnumerable<string> parentDirectories, string currentPathName)
         {
             string result = string.Empty;
-            int curLevel = 0;
+            int curLevel = -1;
             foreach (string dir in parentDirectories)
             {
                 result = Path.Combine(result, dir);
-                if (curLevel++ == lastLevel)
+                if (++curLevel == lastLevel)
                     break;
             }
 
             // if true, the desired last level is the current level
-            if (curLevel == lastLevel)
+            if (curLevel != lastLevel)
                 result = Path.Combine(result, currentPathName);
 
             return result;

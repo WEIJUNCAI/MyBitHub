@@ -36,7 +36,7 @@
                                                    asp-route-Owner="@Model.RepoInfo.Owner"
                                                    asp-route-Reponame="@Model.RepoInfo.RepoName"
                                                    asp-route-Branch="@Model.BranchVM.CurrentBranch.FriendlyName"
-                                                   asp-route-RequestFile="@DirectoryHelper.ReconstructPath(curLevel, Model.PathVM.ParentDirectories, Model.PathVM.CurrentPath)">@parentDir</a>
+                                                   asp-route-RequestDir="@DirectoryHelper.ReconstructPath(curLevel, Model.PathVM.ParentDirectories, Model.PathVM.CurrentPath)">@parentDir</a>
                                             </li>
                                         }
                                         <li class="breadcrumb-item d-inline-flex">
@@ -174,8 +174,8 @@
             </div>
         </div>
 
-        <div id="original-file-name" style="display:none">@Model.PathVM.CurrentPath</div>
-        <div id="original-file-text" style="display:none">@Model.FileVM.Content</div>
+        <div id="original-file-name" class="d-none">@Model.PathVM.CurrentPath</div>
+        <div id="original-file-text" class="d-none">@Model.FileVM.Content</div>
 
         <div class="tab-pane fade" id="nav-issues">
             aliqua ullamco irure incididunt irure non esse consectetur nostrud minim non minim occaecat. Amet duis do nisi

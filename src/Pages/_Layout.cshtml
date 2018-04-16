@@ -9,6 +9,8 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
               crossorigin="anonymous">
         <link rel="stylesheet" href="~/css/site.css" />
+        <script src="~/js/turbolinks.js"></script>
+
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/4.0.0/css/bootstrap.min.css"
@@ -17,6 +19,7 @@
         @*<link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />*@
         <link rel="stylesheet" href="~/css/site.css" />
 
+        <script src="~/js/turbolinks.js"></script>
     </environment>
 
     @RenderSection("PageAdditionalHeader", required: false)
@@ -50,7 +53,6 @@
                 crossorigin="anonymous"></script>
 
         <script src="~/js/site.js" asp-append-version="true"></script>
-        <script src="~/js/postFormActions.js" asp-append-version="true"></script>
 
     </environment>
     <environment exclude="Development">
@@ -61,7 +63,6 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
                 crossorigin="anonymous"></script>
         <script src="~/js/site.js" asp-append-version="true"></script>
-        <script src="~/js/postFormActions.js" asp-append-version="true"></script>
 
     </environment>
 
